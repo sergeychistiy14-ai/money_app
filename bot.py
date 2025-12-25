@@ -143,7 +143,7 @@ async def main():
     await runner.setup()
 
     # Бот будет слушать локальный порт 8080
-    site = web.TCPSite(runner, '127.0.0.1', 8080)
+    site = web.TCPSite(runner, '0.0.0.0', 8080)
 
     logging.info("Starting API server on port 8080...")
     await site.start()
