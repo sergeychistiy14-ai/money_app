@@ -11,19 +11,13 @@
             background-color: var(--tg-theme-bg-color, #fff);
             color: var(--tg-theme-text-color, #000);
             padding: 20px; margin: 0;
-            overflow: hidden;
         }
-        .container {
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        .container { display: flex; flex-direction: column; gap: 15px; }
         label { font-weight: bold; margin-bottom: 5px; display: block; font-size: 14px; }
         input, select {
-            width: 100%; padding: 12px;
-            border: 1px solid #ccc; border-radius: 12px;
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 12px;
             background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px; box-sizing: border-box;
-            outline: none;
+            color: var(--tg-theme-text-color, #000); font-size: 16px; box-sizing: border-box; outline: none;
         }
         button {
             width: 100%; padding: 15px; border: none; border-radius: 12px;
@@ -31,13 +25,12 @@
             color: var(--tg-theme-button-text-color, #fff);
             font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
-        button:active { opacity: 0.8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>💰 Новая запись</h3>
-
         <div>
             <label>Тип операции:</label>
             <select id="type">
@@ -45,18 +38,15 @@
                 <option value="income">📈 Доход</option>
             </select>
         </div>
-
         <div>
             <label>Сумма:</label>
             <input type="number" id="amount" placeholder="0" inputmode="decimal">
         </div>
-
         <div>
             <label>Категория:</label>
             <input type="text" id="category" placeholder="Например: Продукты">
         </div>
-
-        <button id="main-button" onclick="sendData()">Сохранить</button>
+        <button id="save-btn" onclick="sendData()">Сохранить</button>
     </div>
 
     <script>
@@ -64,7 +54,8 @@
         tg.expand();
         tg.ready();
 
-        function sendData() {
+        async function sendData() {
+            const saveBtn = document.getElementById('save-btn');
             const type = document.getElementById('type').value;
             const amount = document.getElementById('amount').value;
             const category = document.getElementById('category').value;
@@ -74,21 +65,40 @@
                 return;
             }
 
+            // Блокируем кнопку, чтобы не нажали дважды
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Сохранение...";
+
+            // Собираем данные.
+            // user_id берем из данных инициализации Telegram
             const data = {
+                user_id: tg.initDataUnsafe?.user?.id || 0,
                 type: type,
                 amount: amount,
                 category: category
             };
 
-            // Логика отправки
             try {
-                tg.sendData(JSON.stringify(data));
-                // Даем небольшую задержку перед закрытием, чтобы данные успели уйти
-                setTimeout(() => {
+                // Прямой запрос на твой сервер (тот самый API, который мы добавили в bot.py)
+                const response = await fetch('https://fingoal.ru/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Если всё ок — закрываем приложение
                     tg.close();
-                }, 100);
+                } else {
+                    const err = await response.json();
+                    tg.showAlert("Ошибка сервера: " + (err.message || "Неизвестная ошибка"));
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = "Сохранить";
+                }
             } catch (error) {
-                tg.showAlert("Ошибка при отправке: " + error.message);
+                // Если API не доступен, пробуем старый метод (на всякий случай)
+                tg.sendData(JSON.stringify(data));
+                setTimeout(() => { tg.close(); }, 100);
             }
         }
     </script>
