@@ -15,7 +15,7 @@ API_TOKEN = '8503104964:AAFQjyQlePmmsyo1tXWHdW-IZd6V9utI4pA'
 
 # !!! ВНИМАНИЕ: Если index.html лежит в папке, добавь её в путь !!!
 # Пример: "https://fingoal.ru/mypage/index.html"
-WEB_APP_URL = "https://fingoal.ru/index.html"
+WEB_APP_URL = "https://sergeychistiy14-ai.github.io/money_app/"
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
