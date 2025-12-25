@@ -8,50 +8,77 @@
     <style>
         body {
             font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            padding: 20px; margin: 0;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
         }
-        .container { display: flex; flex-direction: column; gap: 15px; }
-        label { font-weight: bold; margin-bottom: 5px; display: block; font-size: 14px; }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        h3 { margin-bottom: 10px; text-align: center; }
+        label { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
         input, select {
-            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 12px;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
             background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            color: var(--tg-theme-text-color, #000); font-size: 16px; box-sizing: border-box; outline: none;
+            color: var(--tg-theme-text-color, #000000);
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
         }
         button {
-            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
             background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            color: var(--tg-theme-button-text-color, #ffffff);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: opacity 0.3s;
         }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:disabled { opacity: 0.6; }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>💰 Новая запись</h3>
+
         <div>
-            <label>Тип операции:</label>
+            <label>Тип операции</label>
             <select id="type">
                 <option value="expense">📉 Расход</option>
                 <option value="income">📈 Доход</option>
             </select>
         </div>
+
         <div>
-            <label>Сумма:</label>
+            <label>Сумма</label>
             <input type="number" id="amount" placeholder="0" inputmode="decimal">
         </div>
+
         <div>
-            <label>Категория:</label>
+            <label>Категория</label>
             <input type="text" id="category" placeholder="Например: Продукты">
         </div>
+
         <button id="save-btn" onclick="sendData()">Сохранить</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Разворачиваем на весь экран
         tg.ready();
 
         async function sendData() {
@@ -61,43 +88,43 @@
             const category = document.getElementById('category').value;
 
             if (!amount || !category) {
-                tg.showAlert("Пожалуйста, введите сумму и категорию!");
+                tg.showAlert("Пожалуйста, заполните все поля!");
                 return;
             }
 
+            // Блокируем кнопку
             saveBtn.disabled = true;
             saveBtn.innerText = "Сохранение...";
 
             const data = {
                 user_id: tg.initDataUnsafe?.user?.id || 0,
                 type: type,
-                amount: amount,
+                amount: parseFloat(amount),
                 category: category
             };
 
+            // Метод 1: Прямой запрос на твой IP (быстрый, бесшумный)
             try {
-                // ВАЖНО: Замени ТВОЙ_IP_АДРЕС на цифры своего IP (например 82.146.44.55)
-                // Используем http и порт 8080, так как бот слушает именно его
-                const response = await fetch('31.29.151.2:8080/api/save', {
+                const response = await fetch('http://31.29.151.2:8080/api/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data),
+                    // Если сервер не ответит за 2 секунды, переходим к методу 2
+                    signal: AbortSignal.timeout(2000)
                 });
 
                 if (response.ok) {
                     tg.close();
-                } else {
-                    const err = await response.json();
-                    tg.showAlert("Ошибка сервера: " + (err.message || "Ошибка"));
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = "Сохранить";
+                    return;
                 }
             } catch (error) {
-                // Если прямой запрос не прошел (например, из-за блокировки Mixed Content),
-                // используем стандартный метод Telegram как запасной
-                tg.sendData(JSON.stringify(data));
-                setTimeout(() => { tg.close(); }, 500);
+                console.error("API Error:", error);
             }
+
+            // Метод 2: Резервный через Telegram (всегда работает)
+            // Бот получит данные как сообщение от WebApp
+            tg.sendData(JSON.stringify(data));
+            tg.close();
         }
     </script>
 </body>
