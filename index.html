@@ -101,6 +101,16 @@
     </div>
 
     <script>
+        // Глобальный перехват ошибок
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            const consoleDiv = document.getElementById('debug-console');
+            if (consoleDiv) {
+                consoleDiv.style.display = 'block';
+                consoleDiv.innerHTML += '<span style="color:red">Error: ' + msg + ' (Line: ' + lineNo + ')</span><br>';
+            }
+            return false;
+        };
+
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
@@ -108,16 +118,24 @@
         // Функция логирования на экран
         function debugLog(msg) {
             const consoleDiv = document.getElementById('debug-console');
-            consoleDiv.style.display = 'block';
-            consoleDiv.innerHTML += msg + '<br>';
+            if (consoleDiv) {
+                consoleDiv.style.display = 'block';
+                consoleDiv.innerHTML += msg + '<br>';
+            }
             console.log(msg);
         }
 
         debugLog("App loaded. Ver: " + tg.version);
         debugLog("Platform: " + tg.platform);
 
+        // Привязываем событие клика через JS
+        document.getElementById('save-btn').addEventListener('click', function () {
+            debugLog("Button CLICK detected!");
+            sendData();
+        });
+
         async function sendData() {
-            debugLog("Button clicked!");
+            debugLog("sendData function started");
             const saveBtn = document.getElementById('save-btn');
             const type = document.getElementById('type').value;
             const amount = document.getElementById('amount').value;
