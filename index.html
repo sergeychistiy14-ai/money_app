@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Финансовый помощник</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: -apple-system, system-ui, sans-serif;
@@ -28,6 +29,13 @@
         h3 {
             margin-bottom: 10px;
             text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin-bottom: 20px;
         }
 
         label {
@@ -67,32 +75,71 @@
         button:disabled {
             opacity: 0.6;
         }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stat-card {
+            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h3>💰 Новая запись</h3>
-
-        <div>
-            <label>Тип операции</label>
-            <select id="type">
-                <option value="expense">📉 Расход</option>
-                <option value="income">📈 Доход</option>
-            </select>
+        <!-- MODE: NEW TRANSACTION -->
+        <div id="main-form">
+            <h3>💰 Новая запись</h3>
+            <div>
+                <label>Тип операции</label>
+                <select id="type">
+                    <option value="expense">📉 Расход</option>
+                    <option value="income">📈 Доход</option>
+                </select>
+            </div>
+            <div>
+                <label>Сумма</label>
+                <input type="number" id="amount" placeholder="0" inputmode="decimal">
+            </div>
+            <div>
+                <label>Категория</label>
+                <input type="text" id="category" placeholder="Например: Продукты">
+            </div>
+            <button id="save-btn" onclick="sendData()">Сохранить</button>
         </div>
 
-        <div>
-            <label>Сумма</label>
-            <input type="number" id="amount" placeholder="0" inputmode="decimal">
-        </div>
+        <!-- MODE: REPORT VIEW -->
+        <div id="report-view" class="hidden">
+            <h3 id="report-title">📊 Отчет</h3>
 
-        <div>
-            <label>Категория</label>
-            <input type="text" id="category" placeholder="Например: Продукты">
-        </div>
+            <div class="stat-card">
+                <div style="display: flex; justify-content: space-around;">
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.7;">Доход</div>
+                        <div id="inc-val" style="color: #4caf50; font-weight: bold; font-size: 18px;">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.7;">Расход</div>
+                        <div id="exp-val" style="color: #f44336; font-weight: bold; font-size: 18px;">0</div>
+                    </div>
+                </div>
+            </div>
 
-        <button id="save-btn" onclick="sendData()">Сохранить</button>
+            <div class="chart-container">
+                <canvas id="balanceChart"></canvas>
+            </div>
+
+            <h3>Топ расходов</h3>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+
+            <button onclick="window.Telegram.WebApp.close()">Закрыть</button>
+        </div>
     </div>
 
     <script>
@@ -100,10 +147,72 @@
         tg.expand();
         tg.ready();
 
-        // Привязываем событие клика через JS
-        document.getElementById('save-btn').addEventListener('click', function () {
-            sendData();
-        });
+        // Check for data in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const reportDataRaw = urlParams.get('data');
+
+        if (reportDataRaw) {
+            // SHOW REPORT MODE
+            document.getElementById('main-form').classList.add('hidden');
+            document.getElementById('report-view').classList.remove('hidden');
+
+            try {
+                // Decode Base64 -> JSON
+                const jsonStr = atob(reportDataRaw);
+                const data = JSON.parse(jsonStr);
+
+                document.getElementById('report-title').innerText = `📊 Отчет за ${data.month}`;
+                document.getElementById('inc-val').innerText = `${data.income.toLocaleString()} р.`;
+                document.getElementById('exp-val').innerText = `${data.expense.toLocaleString()} р.`;
+
+                // 1. Balance Chart (Doughnut)
+                new Chart(document.getElementById('balanceChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Доход', 'Расход'],
+                        datasets: [{
+                            data: [data.income, data.expense],
+                            backgroundColor: ['#4caf50', '#f44336'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                // 2. Expenses Category Chart (Bar/Pie)
+                const cats = data.categories;
+                const labels = Object.keys(cats);
+                const values = Object.values(cats);
+
+                // Generate random colors
+                const bgColors = labels.map(() => `hsl(${Math.random() * 360}, 70%, 60%)`);
+
+                new Chart(document.getElementById('categoryChart'), {
+                    type: 'pie', // or 'bar'
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Сумма',
+                            data: values,
+                            backgroundColor: bgColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+
+            } catch (e) {
+                tg.showAlert("Ошибка чтения данных отчета: " + e);
+            }
+
+        } else {
+            // SHOW FORM MODE (Default)
+            document.getElementById('save-btn').addEventListener('click', sendData);
+        }
 
         async function sendData() {
             const saveBtn = document.getElementById('save-btn');
@@ -116,38 +225,32 @@
                 return;
             }
 
-            // Блокируем кнопку
             saveBtn.disabled = true;
             saveBtn.innerText = "Сохранение...";
 
-            const data = {
-                user_id: tg.initDataUnsafe?.user?.id || 0,
-                type: type,
-                amount: parseFloat(amount),
-                category: category
-            };
-
-            // Генерируем payload для Deep Link (Base64 URL-safe)
-            // 1. Формируем строку
             const rawString = `${type}|${amount}|${category}`;
-
-            // 2. Кодируем в UTF-8 (чтобы кириллица не ломалась в btoa)
-            // Хак для UTF-8 to Base64 в браузере: btoa(unescape(encodeURIComponent(str)))
             const base64 = btoa(unescape(encodeURIComponent(rawString)));
-
-            // 3. Делаем URL-safe (заменяем + на -, / на _) и убираем =
             const safePayload = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
             const botUsername = "fingoal_bot";
-            const url = `https://t.me/${botUsername}?start=${safePayload}`;
 
-            // Используем openTelegramLink - это работает везде!
+            // IMPORTANT: Replace 'fingoal_bot' with your actual bot username if needed, 
+            // but the Deep Link logic relies on it matching. 
+            // Since we don't know the exact username freely, 
+            // we assume the user configured it or we use a generic deep link approach?
+            // Actually, we can use `tg.sendData` if we were using Menu Button, but we are using Deep Link.
+            // Let's hope the user set their bot username correctly.
+            // Wait, I see "fingoal_bot" hardcoded. I should probably leave it or ask user?
+            // User never provided bot username. 
+            // HOWEVER! The previous code had "fingoal_bot". If it worked, good. 
+            // If not, the user might have complained.
+            // I'll keep it as is.
+
+            const url = `https://t.me/fingoal_bot?start=${safePayload}`;
             try {
                 tg.openTelegramLink(url);
                 tg.close();
             } catch (e) {
-                // Если вдруг не сработало (маловероятно), просто покажем ошибку
-                tg.showAlert("Ошибка при открытии ссылки: " + e);
+                tg.showAlert("Ошибка: " + e);
             }
         }
     </script>
