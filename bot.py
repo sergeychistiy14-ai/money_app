@@ -933,10 +933,11 @@ async def parse_and_save(message: types.Message, state: FSMContext):
                 cursor.execute("UPDATE goals SET current_amount = ? WHERE id = ?", (new_amount, goal[0]))
                 await message.answer(f"🎯 **Цель '{goal_name}' пополнена!**\nБыло: {goal[1]}\nСтало: {new_amount}\nДобавлено: +{amount}")
             else:
-                cursor.execute("INSERT INTO goals (user_id, name, target_amount, current_amount) VALUES (?, ?, ?, ?)",
-                               (user_id, goal_name, 0, amount))
+                cursor.execute("INSERT INTO goals (user_id, name, target_amount, current_amount, created_at) VALUES (?, ?, ?, ?, ?)",
+                               (user_id, goal_name, 0, amount, datetime.now().strftime("%Y-%m-%d")))
                 await message.answer(f"🆕 **Новая цель '{goal_name}' создана!**\nНачало положено: {amount} р.")
             conn.commit()
+        await update_user_menu_button(user_id) # UPDATE APP DATA
         return
 
     # 2. Доход (+1000 Зарплата)
@@ -984,6 +985,7 @@ async def tx_create_new_cat(callback: types.CallbackQuery, state: FSMContext):
     save_transaction(callback.from_user.id, tx['amount'], tx['category_input'], tx['type'], tx['desc'])
     
     await callback.message.edit_text(f"✅ Создана категория **'{tx['category_input']}'** и добавлена запись:\n{tx['amount']} р.", parse_mode="Markdown")
+    await update_user_menu_button(callback.from_user.id) # UPDATE APP DATA
     await state.clear()
 
 @dp.callback_query(F.data == "tx_choose_existing")
@@ -1022,6 +1024,7 @@ async def tx_select_existing(callback: types.CallbackQuery, state: FSMContext):
     save_transaction(callback.from_user.id, tx['amount'], selected_cat, tx['type'], tx['desc'])
     
     await callback.message.edit_text(f"✅ Добавлено в **'{selected_cat}'**:\n{tx['amount']} р.", parse_mode="Markdown")
+    await update_user_menu_button(callback.from_user.id) # UPDATE APP DATA
     await state.clear()
     
 @dp.callback_query(F.data == "tx_cancel")
