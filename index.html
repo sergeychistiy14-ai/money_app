@@ -146,8 +146,8 @@
                 tg.openTelegramLink(url);
                 tg.close();
             } catch (e) {
-                // Fallback (резерв)
-                tg.sendData(JSON.stringify(data));
+                // Если вдруг не сработало (маловероятно), просто покажем ошибку
+                tg.showAlert("Ошибка при открытии ссылки: " + e);
             }
         }
     </script>
