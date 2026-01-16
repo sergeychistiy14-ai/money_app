@@ -161,12 +161,19 @@
 
             debugLog("Data prepared: " + JSON.stringify(data));
 
-            // Генерируем payload для Deep Link
-            // Заменяем пробелы в категории на '+' (или можно просто оставить, openTelegramLink закодирует)
-            // Формат: type_amount_category
-            const payload = `${type}_${amount}_${category.replace(/\s+/g, '+')}`;
-            const botUsername = "fingoal_bot"; // Твой юзернейм бота
-            const url = `https://t.me/${botUsername}?start=${payload}`;
+            // Генерируем payload для Deep Link (Base64 URL-safe)
+            // 1. Формируем строку
+            const rawString = `${type}|${amount}|${category}`;
+
+            // 2. Кодируем в UTF-8 (чтобы кириллица не ломалась в btoa)
+            // Хак для UTF-8 to Base64 в браузере: btoa(unescape(encodeURIComponent(str)))
+            const base64 = btoa(unescape(encodeURIComponent(rawString)));
+
+            // 3. Делаем URL-safe (заменяем + на -, / на _) и убираем =
+            const safePayload = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+            const botUsername = "fingoal_bot";
+            const url = `https://t.me/${botUsername}?start=${safePayload}`;
 
             debugLog("Opening URL: " + url);
 
