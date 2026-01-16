@@ -1185,6 +1185,7 @@ async def get_miniapp_data(user_id, limit=15):
 @dp.message(F.web_app_data)
 async def web_app_data_handler(message: types.Message):
     try:
+        logging.info(f"DEBUG: WEB APP DATA RECEIVED: {message.web_app_data.data}")
         data = json.loads(message.web_app_data.data)
         action = data.get('action')
         uid = message.from_user.id
