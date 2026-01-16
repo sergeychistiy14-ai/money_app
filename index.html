@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -15,6 +16,7 @@
             display: flex;
             justify-content: center;
         }
+
         .container {
             width: 100%;
             max-width: 400px;
@@ -22,9 +24,21 @@
             flex-direction: column;
             gap: 15px;
         }
-        h3 { margin-bottom: 10px; text-align: center; }
-        label { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
-        input, select {
+
+        h3 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input,
+        select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -35,6 +49,7 @@
             box-sizing: border-box;
             outline: none;
         }
+
         button {
             width: 100%;
             padding: 16px;
@@ -48,9 +63,13 @@
             margin-top: 20px;
             transition: opacity 0.3s;
         }
-        button:disabled { opacity: 0.6; }
+
+        button:disabled {
+            opacity: 0.6;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h3>💰 Новая запись</h3>
@@ -76,12 +95,29 @@
         <button id="save-btn" onclick="sendData()">Сохранить</button>
     </div>
 
+    <div id="debug-console"
+        style="margin-top: 20px; font-size: 12px; color: #555; background: #eee; padding: 10px; display: none;">
+        <b>Debug Log:</b><br>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
+        tg.expand();
         tg.ready();
 
+        // Функция логирования на экран
+        function debugLog(msg) {
+            const consoleDiv = document.getElementById('debug-console');
+            consoleDiv.style.display = 'block';
+            consoleDiv.innerHTML += msg + '<br>';
+            console.log(msg);
+        }
+
+        debugLog("App loaded. Ver: " + tg.version);
+        debugLog("Platform: " + tg.platform);
+
         async function sendData() {
+            debugLog("Button clicked!");
             const saveBtn = document.getElementById('save-btn');
             const type = document.getElementById('type').value;
             const amount = document.getElementById('amount').value;
@@ -89,12 +125,14 @@
 
             if (!amount || !category) {
                 tg.showAlert("Пожалуйста, заполните все поля!");
+                debugLog("Validation failed: empty fields");
                 return;
             }
 
             // Блокируем кнопку
             saveBtn.disabled = true;
             saveBtn.innerText = "Сохранение...";
+            debugLog("Saving...");
 
             const data = {
                 user_id: tg.initDataUnsafe?.user?.id || 0,
@@ -103,15 +141,20 @@
                 category: category
             };
 
+            debugLog("Data prepared: " + JSON.stringify(data));
+
             // Отправляем данные в бот
-            // Бот получит их через handle_web_app_data в bot.py
-            tg.sendData(JSON.stringify(data));
-            
-            // Внимание: после sendData окно обычно закрывается само, 
-            // но на всякий случай можно вызвать close()
-            // (хотя sendData сам по себе должен закрыть WebApp)
-             tg.close();
+            try {
+                tg.sendData(JSON.stringify(data));
+                debugLog("sendData called successfully");
+            } catch (e) {
+                debugLog("Error calling sendData: " + e);
+                alert("Error: " + e);
+            }
+
+            // tg.close(); // Закомментировал чтобы успеть увидеть лог
         }
     </script>
 </body>
+
 </html>
