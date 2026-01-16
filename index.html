@@ -143,16 +143,25 @@
 
             debugLog("Data prepared: " + JSON.stringify(data));
 
-            // Отправляем данные в бот
-            try {
-                tg.sendData(JSON.stringify(data));
-                debugLog("sendData called successfully");
-            } catch (e) {
-                debugLog("Error calling sendData: " + e);
-                alert("Error: " + e);
-            }
+            // Генерируем payload для Deep Link
+            // Заменяем пробелы в категории на '+' (или можно просто оставить, openTelegramLink закодирует)
+            // Формат: type_amount_category
+            const payload = `${type}_${amount}_${category.replace(/\s+/g, '+')}`;
+            const botUsername = "fingoal_bot"; // Твой юзернейм бота
+            const url = `https://t.me/${botUsername}?start=${payload}`;
 
-            // tg.close(); // Закомментировал чтобы успеть увидеть лог
+            debugLog("Opening URL: " + url);
+
+            // Используем openTelegramLink - это работает везде!
+            try {
+                tg.openTelegramLink(url);
+                debugLog("Opened link successfully");
+                tg.close();
+            } catch (e) {
+                debugLog("Link Error: " + e);
+                // Fallback (резерв)
+                tg.sendData(JSON.stringify(data));
+            }
         }
     </script>
 </body>
