@@ -179,29 +179,70 @@
                     options: { responsive: true, maintainAspectRatio: false }
                 });
 
-                // 2. Expenses Category Chart (Bar/Pie)
+                // 2. Expenses Category Chart (Pie)
                 const cats = data.categories;
                 const labels = Object.keys(cats);
                 const values = Object.values(cats);
 
-                // Generate random colors
-                const bgColors = labels.map(() => `hsl(${Math.random() * 360}, 70%, 60%)`);
+                // Curated Palette (Material-like, distinct)
+                const fullPalette = [
+                    '#36A2EB', // Blue
+                    '#FF6384', // Red
+                    '#FFCE56', // Yellow
+                    '#4BC0C0', // Teal
+                    '#9966FF', // Purple
+                    '#FF9F40', // Orange
+                    '#00E676', // Green
+                    '#F50057', // Pink
+                    '#2979FF', // Light Blue
+                    '#FFC107', // Amber
+                    '#795548', // Brown
+                    '#607D8B', // Blue Grey
+                    '#009688', // Dark Teal
+                    '#673AB7', // Deep Purple
+                    '#CDDC39'  // Lime
+                ];
+
+                // Assign colors safely
+                const bgColors = labels.map((_, i) => fullPalette[i % fullPalette.length]);
 
                 new Chart(document.getElementById('categoryChart'), {
-                    type: 'pie', // or 'bar'
+                    type: 'doughnut', // Doughnut is often cleaner than Pie
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Сумма',
                             data: values,
                             backgroundColor: bgColors,
-                            borderWidth: 1
+                            borderWidth: 1,
+                            borderColor: '#ffffff'
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 20,
+                                    padding: 15,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.label || '';
+                                        if (label) { label += ': '; }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed + ' р.';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
 
