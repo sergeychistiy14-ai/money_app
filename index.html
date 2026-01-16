@@ -103,28 +103,14 @@
                 category: category
             };
 
-            // Метод 1: Прямой запрос на твой IP (быстрый, бесшумный)
-            try {
-                const response = await fetch('http://31.29.151.2:8080/api/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                    // Если сервер не ответит за 2 секунды, переходим к методу 2
-                    signal: AbortSignal.timeout(2000)
-                });
-
-                if (response.ok) {
-                    tg.close();
-                    return;
-                }
-            } catch (error) {
-                console.error("API Error:", error);
-            }
-
-            // Метод 2: Резервный через Telegram (всегда работает)
-            // Бот получит данные как сообщение от WebApp
+            // Отправляем данные в бот
+            // Бот получит их через handle_web_app_data в bot.py
             tg.sendData(JSON.stringify(data));
-            tg.close();
+            
+            // Внимание: после sendData окно обычно закрывается само, 
+            // но на всякий случай можно вызвать close()
+            // (хотя sendData сам по себе должен закрыть WebApp)
+             tg.close();
         }
     </script>
 </body>
