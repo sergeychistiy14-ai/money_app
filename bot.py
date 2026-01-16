@@ -218,7 +218,14 @@ async def start_cmd(message: types.Message):
             pass
 
     kb = [
-        [KeyboardButton(text="🚀 Записать доход/расход", web_app=WebAppInfo(url=WEB_APP_URL))],
+        [KeyboardButton(text="📱 Мои Деньги (App)", web_app=WebAppInfo(url=WEB_APP_URL))], # Мы не можем сразу дать данные в Start. 
+        # Стоп. WebAppInfo в KeyboardButton не поддерживает динамический URL с параметрами (start param).
+        # WebAppInfo в KeyboardButton - это просто ссылка на URL. 
+        # Но мы не можем менять URL клавиатуры для каждого юзера динамически (вернее можем, но это статический URL).
+        # РЕШЕНИЕ: Кнопка "📱 Мои Деньги" триггерит текст, а бот отвечает инлайн кнопкой с payload.
+        # ИЛИ: Мы используем InlineButton для запуска.
+        # Давайте сделаем кнопку Reply, которая шлет текст "📱 Мои Деньги".
+        [KeyboardButton(text="📱 Мои Деньги")],
         [KeyboardButton(text="🎯 Цели"), KeyboardButton(text="📂 Категории")],
         [KeyboardButton(text="📊 Бюджеты"), KeyboardButton(text="📈 Отчеты")],
         [KeyboardButton(text="💰 Баланс"), KeyboardButton(text="📋 Транзакции")]
@@ -681,51 +688,81 @@ import base64
 
 @dp.message(F.text == "📈 Отчеты")
 async def reports_menu(message: types.Message):
-    month_start = datetime.now().strftime("%Y-%m-01")
-    month_key = datetime.now().strftime("%Y-%m")
+    # По умолчанию текущий месяц
+    now = datetime.now()
+    text, markup = await generate_report_response(message.from_user.id, now.year, now.month)
+    await message.answer(text, reply_markup=markup, parse_mode="Markdown")
+
+@dp.callback_query(F.data.startswith("report_nav_"))
+async def report_navigate(callback: types.CallbackQuery):
+    # report_nav_2023_10
+    parts = callback.data.split("_")
+    year, month = int(parts[2]), int(parts[3])
     
+    text, markup = await generate_report_response(callback.from_user.id, year, month)
+    
+    try:
+        await callback.message.edit_text(text, reply_markup=markup, parse_mode="Markdown")
+    except Exception:
+        pass # Если текст не изменился (редкий кейс)
+    await callback.answer()
+
+async def generate_report_response(user_id, year, month):
+    # Начало и конец месяца
+    month_str = f"{year}-{month:02d}"
+    start_date = f"{month_str}-01"
+    
+    # След месяц для query (чтобы взять < next_start)
+    if month == 12:
+        next_start = f"{year+1}-01-01"
+    else:
+        next_start = f"{year}-{month+1:02d}-01"
+        
     with sqlite3.connect(DB_PATH) as conn:
         # 1. Общие цифры
         summ = conn.execute("""
             SELECT type, SUM(amount)
             FROM transactions
-            WHERE user_id = ? AND date >= ?
+            WHERE user_id = ? AND date >= ? AND date < ?
             GROUP BY type
-        """, (message.from_user.id, month_start)).fetchall()
+        """, (user_id, start_date, next_start)).fetchall()
         
         # 2. По категориям (расходы) - Топ 5
         cats = conn.execute("""
             SELECT category, SUM(amount)
             FROM transactions
-            WHERE user_id = ? AND date >= ? AND type = 'expense'
+            WHERE user_id = ? AND date >= ? AND date < ? AND type = 'expense'
             GROUP BY category
             ORDER BY SUM(amount) DESC
             LIMIT 5
-        """, (message.from_user.id, month_start)).fetchall()
+        """, (user_id, start_date, next_start)).fetchall()
         
-        # 3. Бюджеты
-        budgets = conn.execute("SELECT category_name, amount FROM budgets WHERE user_id = ? AND month_year = ?", 
-                               (message.from_user.id, month_key)).fetchall()
-        
-        # 4. Цели
-        goals = conn.execute("SELECT name, current_amount, target_amount FROM goals WHERE user_id = ?", 
-                             (message.from_user.id,)).fetchall()
-        
-        # Для JSON берем больше категорий
+        # Для JSON берем все
         cats_all = conn.execute("""
             SELECT category, SUM(amount)
             FROM transactions
-            WHERE user_id = ? AND date >= ? AND type = 'expense'
+            WHERE user_id = ? AND date >= ? AND date < ? AND type = 'expense'
             GROUP BY category
-        """, (message.from_user.id, month_start)).fetchall()
+        """, (user_id, start_date, next_start)).fetchall()
         
+        # Бюджеты и цели не зависят от месяца жестко, но бюджеты привязаны к месяцу.
+        # Покажем бюджеты именно этого месяца
+        month_key = f"{year}-{month:02d}"
+        budgets = conn.execute("SELECT category_name, amount FROM budgets WHERE user_id = ? AND month_year = ?", 
+                               (user_id, month_key)).fetchall()
+        
+        current_goals = conn.execute("SELECT name, current_amount, target_amount FROM goals WHERE user_id = ?", 
+                             (user_id,)).fetchall()
+
     summary = {r[0]: r[1] for r in summ}
     total_income = summary.get('income', 0)
     total_expense = summary.get('expense', 0)
     balance = total_income - total_expense
     
-    # Формируем ТЕКСТ
-    msg = f"📊 **Финансовый отчет за {datetime.now().strftime('%B')}**\n\n"
+    # Имя месяца
+    month_name = datetime(year, month, 1).strftime("%B %Y")
+    
+    msg = f"📊 **Отчет за {month_name}**\n\n"
     msg += f"💰 **Баланс:** {balance:,.0f} р.\n"
     msg += f"📈 Доход: {total_income:,.0f} р.\n"
     msg += f"📉 Расход: {total_expense:,.0f} р.\n\n"
@@ -737,37 +774,75 @@ async def reports_menu(message: types.Message):
         msg += "\n"
         
     if budgets:
-        msg += "**⚖️ Бюджеты:**\n"
-        # Для упрощения не считаем тут прогресс детально, просто лимиты
-        # Или можно быстро подтянуть траты... ладно, пока просто список активных бюджетов
-        # Чтобы не дублировать код, просто выведем лимиты. Подробности в кнопке Бюджеты.
+        msg += "**⚖️ Бюджеты (в этом месяце):**\n"
         for name, limit in budgets:
-             msg += f"- {name}: лимит {limit:,.0f} р.\n"
+             msg += f"- {name}: {limit:,.0f} р.\n"
         msg += "\n"
-
-    if goals:
-         msg += "**🎯 Цели:**\n"
-         for name, curr, target in goals:
+        
+    if current_goals and (year == datetime.now().year and month == datetime.now().month):
+        # Цели показываем только если смотрим текущий месяц, т.к. история целей не хранится (только текущее состояние)
+        msg += "**🎯 Цели (сейчас):**\n"
+        for name, curr, target in current_goals:
              percent = (curr / target * 100) if target > 0 else 0
              msg += f"- {name}: {curr:,.0f} / {target:,.0f} ({percent:.0f}%)\n"
-    
-    # Формируем JSON для WebApp (полные данные)
+
+    # JSON for WebApp
     report_data = {
         'income': total_income,
         'expense': total_expense,
         'categories': {c[0]: c[1] for c in cats_all},
-        'month': datetime.now().strftime("%B")
+        'month': month_name
     }
-    
     json_str = json.dumps(report_data)
     b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
     report_url = f"{WEB_APP_URL}?data={b64_data}"
     
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📊 Открыть диаграммы", web_app=WebAppInfo(url=report_url))]
-    ])
+    # Кнопки навигации
+    # Prev:
+    if month == 1:
+        prev_y, prev_m = year - 1, 12
+    else:
+        prev_y, prev_m = year, month - 1
+        
+    # Next:
+    if month == 12:
+        next_y, next_m = year + 1, 1
+    else:
+        next_y, next_m = year, month + 1
+        
+    now = datetime.now()
+    # Не даем уйти в будущее дальше текущего месяца
+    # (Хотя можно, но данных не будет)
     
-    await message.answer(msg, reply_markup=kb, parse_mode="Markdown")
+    # Кнопки
+    buttons = []
+    # Верхний ряд: Навигация
+    nav_row = [
+        InlineKeyboardButton(text="⬅️", callback_data=f"report_nav_{prev_y}_{prev_m}"),
+        InlineKeyboardButton(text=f"🗓 {month}/{year}", callback_data="ignore"),
+        InlineKeyboardButton(text="➡️", callback_data=f"report_nav_{next_y}_{next_m}")
+    ]
+    buttons.append(nav_row)
+    
+    # Нижний ряд: Графики
+    buttons.append([InlineKeyboardButton(text="📊 Открыть диаграммы", web_app=WebAppInfo(url=report_url))])
+    
+    return msg, InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+@dp.message(F.text == "📱 Мои Деньги")
+async def open_miniapp_handler(message: types.Message):
+    # Генерация ссылки с данными
+    payload = await get_miniapp_data(message.from_user.id)
+    json_str = json.dumps(payload)
+    # Сжатие? JSON может быть большим. Надеемся на 20 txs и base64.
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+    url = f"{WEB_APP_URL}?data={b64_data}"
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📱 Открыть приложение", web_app=WebAppInfo(url=url))]
+    ])
+    await message.answer("Ваш финансовый пульт готов:", reply_markup=kb)
 
 # --- УМНЫЙ ПАРСИНГ ---
 import re
@@ -1030,7 +1105,163 @@ def check_budget_exceeded(user_id, category_name, current_amount):
              return None # Уже было превышено, не спамим каждый раз
     return None
 
+# --- 8. FULL MINI APP SUPPORT (DYNAMIC MENU BUTTON) ---
+
+async def update_user_menu_button(user_id):
+    """
+    Updates the native Menu Button for the user with a dynamic URL containing their latest data.
+    """
+    try:
+        # Generate Payload
+        # Limit to 10 transactions to keep URL short (< 2KB safety)
+        payload = await get_miniapp_data(user_id, limit=10)
+        json_str = json.dumps(payload)
+        b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+        url = f"{WEB_APP_URL}?data={b64_data}"
+        
+        # Update Button
+        await bot.set_chat_menu_button(
+            chat_id=user_id,
+            menu_button=types.MenuButtonWebApp(text="📱 Мои Деньги", web_app=WebAppInfo(url=url))
+        )
+    except Exception as e:
+        logging.error(f"Failed to update menu button for {user_id}: {e}")
+
+async def get_miniapp_data(user_id, limit=15):
+    month_start = datetime.now().strftime("%Y-%m-01")
+    month_key = datetime.now().strftime("%Y-%m")
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        # 1. Transactions
+        tx_rows = conn.execute("""
+            SELECT id, amount, category, type, date, description 
+            FROM transactions 
+            WHERE user_id = ? 
+            ORDER BY id DESC LIMIT ?
+        """, (user_id, limit)).fetchall()
+        
+        # Short keys: i=id, a=amount, c=cat, t=type(0=inc,1=exp), d=date
+        # Optimize size: "2023-10-15 12:00:00" -> "15 Oct" handling in JS? 
+        # For now keep full date but maybe truncated?
+        tx = [{"i": r[0], "a": int(r[1]), "c": r[2], "t": (1 if r[3] == "expense" else 0), "d": r[4][5:16], "ds": r[5]} for r in tx_rows]
+        
+        # 2. Goals
+        goals_rows = conn.execute("SELECT id, name, current_amount, target_amount FROM goals WHERE user_id = ?", (user_id,)).fetchall()
+        goals = [{"i": r[0], "n": r[1], "c": int(r[2]), "t": int(r[3])} for r in goals_rows]
+        
+        # 3. Budgets
+        bud_rows = conn.execute("SELECT category_name, amount FROM budgets WHERE user_id = ? AND month_year = ?", (user_id, month_key)).fetchall()
+        buds = {r[0]: r[1] for r in bud_rows}
+        
+        # 4. Categories
+        cat_rows = conn.execute("SELECT name FROM categories WHERE user_id = ?", (user_id,)).fetchall()
+        cats = [r[0] for r in cat_rows]
+        
+        # 5. Stats
+        summ = conn.execute("SELECT type, SUM(amount) FROM transactions WHERE user_id = ? AND date >= ? GROUP BY type", (user_id, month_start)).fetchall()
+        
+        # Calc spent for budgets
+        cat_spent_rows = conn.execute("SELECT category, SUM(amount) FROM transactions WHERE user_id = ? AND date >= ? AND type = 'expense' GROUP BY category", (user_id, month_start)).fetchall()
+        cat_spent = {r[0]: r[1] for r in cat_spent_rows}
+        
+    summary = {r[0]: r[1] for r in summ}
+    inc = summary.get('income', 0)
+    exp = summary.get('expense', 0)
+    
+    budgets_list = []
+    # Merge budget info
+    all_bud_cats = set(buds.keys()) | set(cat_spent.keys())
+    for c in all_bud_cats:
+        l = int(buds.get(c, 0))
+        s = int(cat_spent.get(c, 0))
+        if l > 0 or s > 0:
+             budgets_list.append({"n": c, "l": l, "s": s})
+    
+    payload = {
+        "tx": tx,
+        "g": goals,
+        "b": budgets_list,
+        "c": cats,
+        "s": {"i": int(inc), "e": int(exp)}, # bal calculated on client
+        "m": datetime.now().strftime("%B")
+    }
+    return payload
+
+@dp.message(F.web_app_data)
+async def web_app_data_handler(message: types.Message):
+    try:
+        data = json.loads(message.web_app_data.data)
+        action = data.get('action')
+        uid = message.from_user.id
+        
+        resp_text = "✅ Данные обновлены"
+        
+        with sqlite3.connect(DB_PATH) as conn:
+            if action == "add_tx":
+                t_type = data.get('t')   # income/expense
+                amount = float(data.get('a'))
+                cat = data.get('c')
+                desc = data.get('d', '')
+                date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                conn.execute("INSERT INTO transactions (user_id, amount, category, type, date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                             (uid, amount, cat, t_type, date_str, desc))
+                
+                resp_text = f"✅ Добавлено: {amount} р. ({cat})"
+                if t_type == "expense":
+                    w = check_budget_exceeded(uid, cat, amount)
+                    if w: resp_text += f"\n\n🚨 {w}"
+                    
+            elif action == "add_goal":
+                name = data.get('n')
+                target = float(data.get('t'))
+                conn.execute("INSERT INTO goals (user_id, name, target_amount, current_amount, created_at) VALUES (?, ?, ?, 0, ?)",
+                             (uid, name, target, datetime.now().strftime("%Y-%m-%d")))
+                resp_text = f"🎯 Цель '{name}' создана!"
+                
+            elif action == "add_budget":
+                cat = data.get('c')
+                limit = float(data.get('l'))
+                m_key = datetime.now().strftime("%Y-%m")
+                conn.execute("DELETE FROM budgets WHERE user_id = ? AND category_name = ? AND month_year = ?", (uid, cat, m_key))
+                conn.execute("INSERT INTO budgets (user_id, category_name, amount, month_year) VALUES (?, ?, ?, ?)", (uid, cat, limit, m_key))
+                resp_text = f"⚖️ Бюджет на '{cat}' установлен!"
+
+            elif action == "top_up_goal":
+                gid = data.get('id')
+                amount = float(data.get('a'))
+                conn.execute("UPDATE goals SET current_amount = current_amount + ? WHERE id = ? AND user_id = ?", (amount, gid, uid))
+                resp_text = f"💰 Копилка пополнена на {amount} р.!"
+
+        conn.commit()
+        
+        # Update Menu Button (Critical!)
+        await update_user_menu_button(uid)
+        
+        # Just notify user
+        await message.answer(resp_text)
+        
+    except Exception as e:
+        logging.error(f"WebApp Error: {e}")
+        await message.answer("Ошибка обработки данных приложения.")
+
 # --- ЗАПУСК ---
+
+@dp.message(Command("reset_all_data_secret"))
+async def secret_reset_data(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("DELETE FROM transactions WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM goals WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM categories WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM budgets WHERE user_id = ?", (user_id,))
+        conn.commit()
+    
+    await state.clear()
+    await update_user_menu_button(user_id) # Reset app state too
+    await message.answer("💥 **ПОЛНЫЙ СБРОС ВЫПОЛНЕН**\nВсе ваши категории, транзакции, цели и бюджеты удалены.\n\nЖмите /start для начала новой жизни.", parse_mode="Markdown")
+
+
 async def main():
     init_db()
 
