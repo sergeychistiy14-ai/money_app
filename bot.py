@@ -237,8 +237,9 @@ async def start_cmd(message: types.Message):
             if padding:
                 payload += '=' * (4 - padding)
             
-            # 2. Декодируем
+            # 2. Декодируем Base64
             import base64
+            from urllib.parse import unquote
             decoded_bytes = base64.urlsafe_b64decode(payload)
             decoded_str = decoded_bytes.decode('utf-8')
             

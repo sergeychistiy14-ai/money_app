@@ -429,12 +429,15 @@
             <div class="handle"></div>
             <h2 id="modal-title" style="margin-top:0; font-size: 18px; margin-bottom:20px;">Новая запись</h2>
             <div id="form-tx">
-                <select id="tx-type">
+                <select id="tx-type" onchange="updateCategoryList()">
                     <option value="expense">Расходы</option>
                     <option value="income">Доходы</option>
                 </select>
                 <input type="number" id="tx-amount" placeholder="Сумма" inputmode="decimal">
-                <input type="text" id="tx-cat" placeholder="Категория">
+                <select id="tx-cat">
+                    <option value="">-- Выберите категорию --</option>
+                </select>
+                <input type="text" id="tx-cat-new" placeholder="Название новой категории" class="hidden">
                 <button class="action-btn" onclick="submitTx()">Добавить</button>
             </div>
             <div id="form-goal" class="hidden">
@@ -589,12 +592,51 @@
         }
         function closeAdd(e) { if (e && e.target !== document.getElementById('modal-overlay')) return; document.getElementById('modal-overlay').classList.remove('open'); }
 
-        // Функция отправки данных через deep link (sendData не работает с Menu Button)
+        // Заполняем список категорий при открытии формы
+        function updateCategoryList() {
+            const select = document.getElementById('tx-cat');
+            const newInput = document.getElementById('tx-cat-new');
+            select.innerHTML = '<option value="">-- Выберите категорию --</option>';
+
+            // Добавляем категории из данных (D.c содержит список категорий)
+            if (D.c && D.c.length > 0) {
+                D.c.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    opt.textContent = cat;
+                    select.appendChild(opt);
+                });
+            }
+
+            // Добавляем опцию "Создать новую"
+            const newOpt = document.createElement('option');
+            newOpt.value = '__NEW__';
+            newOpt.textContent = '➕ Создать новую...';
+            select.appendChild(newOpt);
+
+            // Показать/скрыть поле для новой категории
+            select.onchange = function () {
+                if (this.value === '__NEW__') {
+                    newInput.classList.remove('hidden');
+                    newInput.focus();
+                } else {
+                    newInput.classList.add('hidden');
+                }
+            };
+        }
+
+        // Функция для кодирования Unicode в Base64 URL-safe
+        function encodeBase64Url(str) {
+            // Используем encodeURIComponent для кириллицы, затем unescape для btoa
+            const utf8 = unescape(encodeURIComponent(str));
+            const b64 = btoa(utf8);
+            return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        // Функция отправки данных через deep link
         function send(action, payload) {
-            // Формат: action|param1|param2|...
             let dataStr = '';
             if (action === 'add_tx') {
-                // t=type, a=amount, c=category
                 dataStr = `${payload.t}|${payload.a}|${payload.c}`;
             } else if (action === 'add_goal') {
                 dataStr = `goal|${payload.n}|${payload.t}`;
@@ -604,17 +646,47 @@
                 dataStr = `topup|${payload.id}|${payload.a}`;
             }
 
-            // Base64 URL-safe кодирование
-            const b64 = btoa(dataStr).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            const b64 = encodeBase64Url(dataStr);
 
-            // Перенаправляем в бот через deep link
-            window.location.href = `https://t.me/fingoal_bot?start=${b64}`;
+            // Используем tg:// для открытия в приложении Telegram
+            window.location.href = `tg://resolve?domain=fingoal_bot&start=${b64}`;
         }
 
-        function submitTx() { const t = document.getElementById('tx-type').value; const a = document.getElementById('tx-amount').value; const c = document.getElementById('tx-cat').value; if (!a || !c) return tg.showAlert("Заполните поля"); send('add_tx', { t, a, c }); }
-        function submitGoal() { const n = document.getElementById('g-name').value; const t = document.getElementById('g-target').value; if (!n || !t) return tg.showAlert("Заполните поля"); send('add_goal', { n, t }); }
-        function submitBudget() { const c = document.getElementById('b-cat').value; const l = document.getElementById('b-limit').value; if (!c || !l) return tg.showAlert("Заполните поля"); send('add_budget', { c, l }); }
-        function topUp(id) { const val = prompt("Сколько добавить?"); if (val) send('top_up_goal', { id, a: val }); }
+        function submitTx() {
+            const t = document.getElementById('tx-type').value;
+            const a = document.getElementById('tx-amount').value;
+            let c = document.getElementById('tx-cat').value;
+
+            // Если выбрано "Создать новую", берём значение из текстового поля
+            if (c === '__NEW__') {
+                c = document.getElementById('tx-cat-new').value.trim();
+            }
+
+            if (!a || !c) return tg.showAlert("Заполните все поля");
+            send('add_tx', { t, a, c });
+        }
+
+        function submitGoal() {
+            const n = document.getElementById('g-name').value;
+            const t = document.getElementById('g-target').value;
+            if (!n || !t) return tg.showAlert("Заполните поля");
+            send('add_goal', { n, t });
+        }
+
+        function submitBudget() {
+            const c = document.getElementById('b-cat').value;
+            const l = document.getElementById('b-limit').value;
+            if (!c || !l) return tg.showAlert("Заполните поля");
+            send('add_budget', { c, l });
+        }
+
+        function topUp(id) {
+            const val = prompt("Сколько добавить?");
+            if (val) send('top_up_goal', { id, a: val });
+        }
+
+        // Инициализация списка категорий при загрузке
+        updateCategoryList();
     </script>
 </body>
 
