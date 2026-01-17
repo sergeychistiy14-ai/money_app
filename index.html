@@ -589,10 +589,31 @@
         }
         function closeAdd(e) { if (e && e.target !== document.getElementById('modal-overlay')) return; document.getElementById('modal-overlay').classList.remove('open'); }
 
-        function send(a, p) { p.action = a; tg.sendData(JSON.stringify(p)); tg.close(); }
-        function submitTx() { const t = document.getElementById('tx-type').value; const a = document.getElementById('tx-amount').value; const c = document.getElementById('tx-cat').value; if (!a || !c) return tg.showAlert("Заполните поля"); send('add_tx', { t, a, c, d: '' }); }
-        function submitGoal() { const n = document.getElementById('g-name').value; const t = document.getElementById('g-target').value; send('add_goal', { n, t }); }
-        function submitBudget() { const c = document.getElementById('b-cat').value; const l = document.getElementById('b-limit').value; send('add_budget', { c, l }); }
+        // Функция отправки данных через deep link (sendData не работает с Menu Button)
+        function send(action, payload) {
+            // Формат: action|param1|param2|...
+            let dataStr = '';
+            if (action === 'add_tx') {
+                // t=type, a=amount, c=category
+                dataStr = `${payload.t}|${payload.a}|${payload.c}`;
+            } else if (action === 'add_goal') {
+                dataStr = `goal|${payload.n}|${payload.t}`;
+            } else if (action === 'add_budget') {
+                dataStr = `budget|${payload.c}|${payload.l}`;
+            } else if (action === 'top_up_goal') {
+                dataStr = `topup|${payload.id}|${payload.a}`;
+            }
+
+            // Base64 URL-safe кодирование
+            const b64 = btoa(dataStr).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+            // Перенаправляем в бот через deep link
+            window.location.href = `https://t.me/fingoal_bot?start=${b64}`;
+        }
+
+        function submitTx() { const t = document.getElementById('tx-type').value; const a = document.getElementById('tx-amount').value; const c = document.getElementById('tx-cat').value; if (!a || !c) return tg.showAlert("Заполните поля"); send('add_tx', { t, a, c }); }
+        function submitGoal() { const n = document.getElementById('g-name').value; const t = document.getElementById('g-target').value; if (!n || !t) return tg.showAlert("Заполните поля"); send('add_goal', { n, t }); }
+        function submitBudget() { const c = document.getElementById('b-cat').value; const l = document.getElementById('b-limit').value; if (!c || !l) return tg.showAlert("Заполните поля"); send('add_budget', { c, l }); }
         function topUp(id) { const val = prompt("Сколько добавить?"); if (val) send('top_up_goal', { id, a: val }); }
     </script>
 </body>

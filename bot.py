@@ -18,9 +18,67 @@ API_TOKEN = '8503104964:AAFQjyQlePmmsyo1tXWHdW-IZd6V9utI4pA'
 WEB_APP_URL = "https://sergeychistiy14-ai.github.io/money_app/"
 DB_PATH = 'finance_pro.db'
 
-logging.basicConfig(level=logging.INFO)
+# Включаем логирование
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("bot_debug.log"),
+        logging.StreamHandler()
+    ]
+)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
+
+# DEBUG HANDLER - ОТКЛЮЧЕН (дублирует web_app_data_handler)
+# @dp.message(F.web_app_data)
+# async def debug_webapp_trigger(message: types.Message):
+#     logging.info(f"DEBUG: CAUGHT WEB_APP_DATA via explicit filter! Data: {message.web_app_data.data}")
+#     # Forward to real handler
+#     await web_app_data_handler(message)
+
+# Catch-all for diagnostics (will block if matched, so make it specific or use middleware)
+# Let's just rely on the above. If F.web_app_data matches, it will log.
+# If it DOES NOT match, we need to know why.
+
+
+# @dp.message()
+# async def log_all_updates(message: types.Message):
+#     logging.info(f"DEBUG: CAUGHT UPDATE: content_type={message.content_type}, text={message.text}, web_app_data={message.web_app_data}")
+#     # Manually propagate if it's strictly debugging? 
+#     # Actually, handlers STOP propagation. 
+#     # If I verify this catches web_app_data, I can call the handler directly.
+#     if message.web_app_data:
+#         logging.info("DEBUG: IT IS WEB_APP_DATA! Calling handler manually...")
+#         await web_app_data_handler(message)
+#         return
+#     # If not, we might block other handlers. 
+#     # In aiogram 3, middleware is better, but this is a quick fix.
+#     # To avoid blocking, we shouldn't return? No, that's not how it works.
+#     # We must RE-ROUTE.
+#     # Hack: check if it's text, if so call text_handler? Too complex.
+#     # BETTER: Just use this to LOG and see what happens, user will retry.
+#     pass 
+    # Wait, 'pass' means it returns None, which aiogram treats as "not handled" -> continues to next handler!
+    # Perfect. 
+    # actually, handler must return logic. if it doesn't return anything (None), aiogram thinks "not processed"? 
+    # "If handler returns None, the dispatcher will continue to check other handlers." -> NO, that's filters.
+    # Handlers consume the event.
+    # So I CANNOT put a catch-all @dp.message() here without blocking everything.
+    
+    # STRATEGY CHANGE: Put it ONLY for web_app_data first, to verify filter?
+    # NO, I need to see if it even Matches.
+    
+    # Let's use MIDDLEWARE logic or just use the log file I already have?
+    # The log file only showed "Update handled". It didn't show content.
+    
+    # OK, I will add this logger but filter it for web_app_data specifically with a broader filter?
+    # Or just inspect content_type "service_message"?
+    
+    # Let's try:
+    # @dp.message(F.content_type.in_({'web_app_data', 'service'}))
+    # async def debug_webapp(...): ...
+
 
 class GoalStates(StatesGroup):
     waiting_for_name = State()
@@ -121,24 +179,25 @@ def save_transaction(user_id, amount, category, t_type, description=None):
 
 
 # --- 1. ОБРАБОТКА ДАННЫХ ИЗ MINI APP (tg.sendData) ---
-# Этот метод работает ВСЕГДА, даже если порты закрыты
-@dp.message(F.web_app_data)
-async def web_app_receive(message: types.Message):
-    try:
-        data = json.loads(message.web_app_data.data)
-        save_transaction(
-            message.from_user.id,
-            data.get('amount'),
-            data.get('category'),
-            data.get('type')
-        )
-
-        icon = "📉" if data.get('type') == 'expense' else "📈"
-        await message.answer(f"✅ **Данные сохранены!**\n{icon} {data.get('amount')} р. ({data.get('category')})",
-                             parse_mode="Markdown")
-    except Exception as e:
-        logging.error(f"Ошибка web_app_data: {e}")
-        await message.answer("❌ Ошибка при сохранении данных.")
+# УСТАРЕВШИЙ ОБРАБОТЧИК - ОТКЛЮЧЕН (использует старый формат данных)
+# Актуальный обработчик: web_app_data_handler (строка ~1243)
+# @dp.message(F.web_app_data)
+# async def web_app_receive(message: types.Message):
+#     try:
+#         data = json.loads(message.web_app_data.data)
+#         save_transaction(
+#             message.from_user.id,
+#             data.get('amount'),
+#             data.get('category'),
+#             data.get('type')
+#         )
+#
+#         icon = "📉" if data.get('type') == 'expense' else "📈"
+#         await message.answer(f"✅ **Данные сохранены!**\n{icon} {data.get('amount')} р. ({data.get('category')})",
+#                              parse_mode="Markdown")
+#     except Exception as e:
+#         logging.error(f"Ошибка web_app_data: {e}")
+#         await message.answer("❌ Ошибка при сохранении данных.")
 
 
 # --- 2. API ОБРАБОТЧИК (Прямой POST запрос) ---
@@ -167,8 +226,7 @@ async def start_cmd(message: types.Message):
     init_db()
     
     # Проверяем, есть ли аргументы (payload)
-    # Формат ожидается: type_amount_category (например: income_1000_salary)
-    # Но пробелы и спецсимволы могут быть заменены, поэтому будем декодировать аккуратно
+    # Формат: type|amount|category ИЛИ goal|name|target ИЛИ budget|cat|limit ИЛИ topup|id|amount
     args = message.text.split(maxsplit=1)
     if len(args) > 1:
         payload = args[1]
@@ -184,37 +242,90 @@ async def start_cmd(message: types.Message):
             decoded_bytes = base64.urlsafe_b64decode(payload)
             decoded_str = decoded_bytes.decode('utf-8')
             
-            # Формат строки: type|amount|category
-            # Используем '|' как разделитель, т.к. в Base64 мы кодируем всё целиком
-            parts = decoded_str.split('|', 2)
+            # Формат строки: action|param1|param2
+            parts = decoded_str.split('|')
             
-            if len(parts) == 3:
-                t_type, amount, category = parts
+            if len(parts) >= 3:
+                action = parts[0]
                 
-                # Сохраняем
-                if not save_transaction(message.from_user.id, amount, category, t_type):
-                     # Если вернуло False, значит дубликат
-                     try:
+                # --- ТРАНЗАКЦИЯ (income|1000|Salary или expense|500|Food) ---
+                if action in ('income', 'expense'):
+                    t_type, amount, category = action, parts[1], parts[2]
+                    
+                    if not save_transaction(message.from_user.id, amount, category, t_type):
+                        try:
+                            await message.delete()
+                        except:
+                            pass
+                        return
+
+                    try:
                         await message.delete()
-                     except:
+                    except:
                         pass
-                     return
 
-                # Удаляем сообщение с командой /start (чтобы не пугать пользователя)
-                try:
-                    await message.delete()
-                except:
-                    pass
-
-                icon = "📉" if t_type == 'expense' else "📈"
-                await message.answer(f"✅ **Данные сохранены!**\n{icon} {amount} р. ({category})",
-                                     parse_mode="Markdown")
-                # Не показываем приветствие
-                return 
+                    icon = "📉" if t_type == 'expense' else "📈"
+                    await message.answer(f"✅ **Данные сохранены!**\n{icon} {amount} р. ({category})",
+                                         parse_mode="Markdown")
+                    await update_user_menu_button(message.from_user.id)
+                    return
+                
+                # --- ЦЕЛЬ (goal|iPhone|100000) ---
+                elif action == 'goal':
+                    name, target = parts[1], float(parts[2])
+                    with sqlite3.connect(DB_PATH) as conn:
+                        conn.execute("INSERT INTO goals (user_id, name, target_amount, current_amount, created_at) VALUES (?, ?, ?, 0, ?)",
+                                     (message.from_user.id, name, target, datetime.now().strftime("%Y-%m-%d")))
+                        conn.commit()
+                    
+                    try:
+                        await message.delete()
+                    except:
+                        pass
+                    
+                    await message.answer(f"🎯 **Цель '{name}' создана!**\nНужно накопить: {target:,.0f} р.", parse_mode="Markdown")
+                    await update_user_menu_button(message.from_user.id)
+                    return
+                
+                # --- БЮДЖЕТ (budget|Food|10000) ---
+                elif action == 'budget':
+                    cat, limit = parts[1], float(parts[2])
+                    month_key = datetime.now().strftime("%Y-%m")
+                    with sqlite3.connect(DB_PATH) as conn:
+                        conn.execute("DELETE FROM budgets WHERE user_id = ? AND category_name = ? AND month_year = ?",
+                                     (message.from_user.id, cat, month_key))
+                        conn.execute("INSERT INTO budgets (user_id, category_name, amount, month_year) VALUES (?, ?, ?, ?)",
+                                     (message.from_user.id, cat, limit, month_key))
+                        conn.commit()
+                    
+                    try:
+                        await message.delete()
+                    except:
+                        pass
+                    
+                    await message.answer(f"⚖️ **Бюджет на '{cat}' установлен!**\nЛимит: {limit:,.0f} р.", parse_mode="Markdown")
+                    await update_user_menu_button(message.from_user.id)
+                    return
+                
+                # --- ПОПОЛНЕНИЕ ЦЕЛИ (topup|goal_id|amount) ---
+                elif action == 'topup':
+                    goal_id, amount = int(parts[1]), float(parts[2])
+                    with sqlite3.connect(DB_PATH) as conn:
+                        conn.execute("UPDATE goals SET current_amount = current_amount + ? WHERE id = ? AND user_id = ?",
+                                     (amount, goal_id, message.from_user.id))
+                        conn.commit()
+                    
+                    try:
+                        await message.delete()
+                    except:
+                        pass
+                    
+                    await message.answer(f"💰 **Копилка пополнена на {amount:,.0f} р.!**", parse_mode="Markdown")
+                    await update_user_menu_button(message.from_user.id)
+                    return
+                    
         except Exception as e:
             logging.error(f"Error parsing payload: {e}")
-            # Если не вышло раскодировать как Base64, пробуем старый метод (для обратной совместимости или если просто текст)
-            # (Оставим пустым, чтобы не спамить ошибками, если пользователь просто ввел /start text)
             pass
 
     kb = [
