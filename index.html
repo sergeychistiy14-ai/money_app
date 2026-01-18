@@ -647,9 +647,10 @@
             }
 
             const b64 = encodeBase64Url(dataStr);
+            const url = `https://t.me/fingoal_bot?start=${b64}`;
 
-            // Используем tg:// для открытия в приложении Telegram
-            window.location.href = `tg://resolve?domain=fingoal_bot&start=${b64}`;
+            // Используем Telegram API для открытия ссылки
+            tg.openTelegramLink(url);
         }
 
         function submitTx() {
