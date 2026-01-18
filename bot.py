@@ -329,13 +329,20 @@ async def start_cmd(message: types.Message):
             logging.error(f"Error parsing payload: {e}")
             pass
 
+    # Генерируем URL с данными для MiniApp
+    payload = await get_miniapp_data(message.from_user.id, limit=10)
+    json_str = json.dumps(payload)
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+    webapp_url = f"{WEB_APP_URL}?data={b64_data}"
+    
     kb = [
+        [KeyboardButton(text="📱 Мои Деньги", web_app=WebAppInfo(url=webapp_url))],
         [KeyboardButton(text="🎯 Цели"), KeyboardButton(text="📂 Категории")],
         [KeyboardButton(text="📊 Бюджеты"), KeyboardButton(text="📈 Отчеты")],
         [KeyboardButton(text="💰 Баланс"), KeyboardButton(text="📋 Транзакции")]
     ]
     await message.answer(
-        "Привет! Я твой финансовый помощник 2.0. \n\nТеперь я понимаю текст:\n🔹 `1000 Еда` — расход\n🔹 `+5000 ЗП` — доход\n🔹 `!1000 Отпуск` — в копилку\n\nИли используй кнопки:",
+        "Привет! Я твой финансовый помощник 2.0. \n\nТеперь я понимаю текст:\n🔹 `1000 Еда` — расход\n🔹 `+5000 ЗП` — доход\n🔹 `!1000 Отпуск` — в копилку\n\n**📱 Нажми 'Мои Деньги' для MiniApp:**",
         reply_markup=ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True),
         parse_mode="Markdown"
     )

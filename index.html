@@ -633,24 +633,11 @@
             return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
-        // Функция отправки данных через deep link
+        // Функция отправки данных через sendData (работает ТОЛЬКО при открытии через Reply Keyboard)
         function send(action, payload) {
-            let dataStr = '';
-            if (action === 'add_tx') {
-                dataStr = `${payload.t}|${payload.a}|${payload.c}`;
-            } else if (action === 'add_goal') {
-                dataStr = `goal|${payload.n}|${payload.t}`;
-            } else if (action === 'add_budget') {
-                dataStr = `budget|${payload.c}|${payload.l}`;
-            } else if (action === 'top_up_goal') {
-                dataStr = `topup|${payload.id}|${payload.a}`;
-            }
-
-            const b64 = encodeBase64Url(dataStr);
-            const url = `https://t.me/fingoal_bot?start=${b64}`;
-
-            // Используем Telegram API для открытия ссылки
-            tg.openTelegramLink(url);
+            payload.action = action;
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
         }
 
         function submitTx() {
