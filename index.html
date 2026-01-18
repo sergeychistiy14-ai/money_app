@@ -633,11 +633,38 @@
             return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
-        // Функция отправки данных через sendData (работает ТОЛЬКО при открытии через Reply Keyboard)
-        function send(action, payload) {
+        // API сервер для синхронизации
+        const API_URL = 'https://fingoal.ru/api/save';
+
+        // Функция отправки данных через API (работает с Menu Button!)
+        async function send(action, payload) {
             payload.action = action;
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
+            payload.user_id = tg.initDataUnsafe?.user?.id;
+
+            if (!payload.user_id) {
+                tg.showAlert("Ошибка: не удалось получить ID пользователя");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'ok') {
+                    tg.showAlert(result.message || "✅ Сохранено!");
+                    tg.close();
+                } else {
+                    tg.showAlert("Ошибка: " + (result.message || "Неизвестная ошибка"));
+                }
+            } catch (e) {
+                console.error('API Error:', e);
+                tg.showAlert("Ошибка соединения с сервером");
+            }
         }
 
         function submitTx() {

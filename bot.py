@@ -200,23 +200,94 @@ def save_transaction(user_id, amount, category, t_type, description=None):
 #         await message.answer("❌ Ошибка при сохранении данных.")
 
 
-# --- 2. API ОБРАБОТЧИК (Прямой POST запрос) ---
-# Для работы этого метода нужен открытый порт 8080
+# --- 2. API ОБРАБОТЧИК (Прямой POST запрос от MiniApp) ---
+# Для работы нужен HTTPS через Nginx reverse proxy
+
+# CORS middleware для разрешения запросов от GitHub Pages
+@web.middleware
+async def cors_middleware(request, handler):
+    # Обработка preflight OPTIONS запроса
+    if request.method == 'OPTIONS':
+        response = web.Response()
+    else:
+        response = await handler(request)
+    
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
+
 async def handle_api_save(request):
+    """Универсальный API эндпоинт для всех действий от MiniApp"""
     try:
         data = await request.json()
         user_id = data.get('user_id')
-
-        save_transaction(user_id, data.get('amount'), data.get('category'), data.get('type'))
-
-        icon = "📉" if data.get('type') == 'expense' else "📈"
-        await bot.send_message(
-            user_id,
-            f"✅ **Запись через API!**\n{icon} {data.get('amount')} р. ({data.get('category')})",
-            parse_mode="Markdown"
-        )
-        return web.json_response({"status": "ok"})
+        action = data.get('action')
+        
+        if not user_id:
+            return web.json_response({"status": "error", "message": "user_id required"}, status=400)
+        
+        resp_text = "✅ Данные сохранены"
+        
+        with sqlite3.connect(DB_PATH) as conn:
+            # --- ТРАНЗАКЦИЯ ---
+            if action == 'add_tx':
+                t_type = data.get('t')  # income/expense
+                amount = float(data.get('a'))
+                cat = data.get('c')
+                desc = data.get('d', '')
+                date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                conn.execute("INSERT INTO transactions (user_id, amount, category, type, date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                             (user_id, amount, cat, t_type, date_str, desc))
+                conn.commit()
+                
+                icon = "📉" if t_type == 'expense' else "📈"
+                resp_text = f"✅ Добавлено: {amount} р. ({cat})"
+                
+            # --- ЦЕЛЬ ---
+            elif action == 'add_goal':
+                name = data.get('n')
+                target = float(data.get('t'))
+                conn.execute("INSERT INTO goals (user_id, name, target_amount, current_amount, created_at) VALUES (?, ?, ?, 0, ?)",
+                             (user_id, name, target, datetime.now().strftime("%Y-%m-%d")))
+                conn.commit()
+                resp_text = f"🎯 Цель '{name}' создана!"
+                
+            # --- БЮДЖЕТ ---
+            elif action == 'add_budget':
+                cat = data.get('c')
+                limit = float(data.get('l'))
+                m_key = datetime.now().strftime("%Y-%m")
+                conn.execute("DELETE FROM budgets WHERE user_id = ? AND category_name = ? AND month_year = ?", (user_id, cat, m_key))
+                conn.execute("INSERT INTO budgets (user_id, category_name, amount, month_year) VALUES (?, ?, ?, ?)", (user_id, cat, limit, m_key))
+                conn.commit()
+                resp_text = f"⚖️ Бюджет на '{cat}' установлен!"
+                
+            # --- ПОПОЛНЕНИЕ ЦЕЛИ ---
+            elif action == 'top_up_goal':
+                goal_id = data.get('id')
+                amount = float(data.get('a'))
+                conn.execute("UPDATE goals SET current_amount = current_amount + ? WHERE id = ? AND user_id = ?", (amount, goal_id, user_id))
+                conn.commit()
+                resp_text = f"💰 Копилка пополнена на {amount} р.!"
+                
+            else:
+                return web.json_response({"status": "error", "message": f"Unknown action: {action}"}, status=400)
+        
+        # Отправляем подтверждение пользователю
+        try:
+            await bot.send_message(user_id, resp_text, parse_mode="Markdown")
+        except Exception as e:
+            logging.error(f"Failed to send message to user {user_id}: {e}")
+        
+        # Обновляем Menu Button с новыми данными
+        await update_user_menu_button(user_id)
+        
+        return web.json_response({"status": "ok", "message": resp_text})
+        
     except Exception as e:
+        logging.error(f"API Error: {e}")
         return web.json_response({"status": "error", "message": str(e)}, status=400)
 
 
@@ -329,20 +400,16 @@ async def start_cmd(message: types.Message):
             logging.error(f"Error parsing payload: {e}")
             pass
 
-    # Генерируем URL с данными для MiniApp
-    payload = await get_miniapp_data(message.from_user.id, limit=10)
-    json_str = json.dumps(payload)
-    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
-    webapp_url = f"{WEB_APP_URL}?data={b64_data}"
+    # Обновляем Menu Button для MiniApp
+    await update_user_menu_button(message.from_user.id)
     
     kb = [
-        [KeyboardButton(text="📱 Мои Деньги", web_app=WebAppInfo(url=webapp_url))],
         [KeyboardButton(text="🎯 Цели"), KeyboardButton(text="📂 Категории")],
         [KeyboardButton(text="📊 Бюджеты"), KeyboardButton(text="📈 Отчеты")],
         [KeyboardButton(text="💰 Баланс"), KeyboardButton(text="📋 Транзакции")]
     ]
     await message.answer(
-        "Привет! Я твой финансовый помощник 2.0. \n\nТеперь я понимаю текст:\n🔹 `1000 Еда` — расход\n🔹 `+5000 ЗП` — доход\n🔹 `!1000 Отпуск` — в копилку\n\n**📱 Нажми 'Мои Деньги' для MiniApp:**",
+        "Привет! Я твой финансовый помощник 2.0. \n\n📱 **Нажми кнопку слева от ввода** для открытия MiniApp\n\nИли используй текст:\n🔹 `1000 Еда` — расход\n🔹 `+5000 ЗП` — доход\n🔹 `!1000 Отпуск` — в копилку",
         reply_markup=ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True),
         parse_mode="Markdown"
     )
@@ -1380,9 +1447,10 @@ async def secret_reset_data(message: types.Message, state: FSMContext):
 async def main():
     init_db()
 
-    # Настройка API сервера (aiohttp)
-    app = web.Application()
+    # Настройка API сервера (aiohttp) с CORS
+    app = web.Application(middlewares=[cors_middleware])
     app.router.add_post('/api/save', handle_api_save)
+    app.router.add_route('OPTIONS', '/api/save', handle_api_save)  # Для preflight
     runner = web.AppRunner(app)
     await runner.setup()
 
