@@ -31,12 +31,12 @@ logging.basicConfig(
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# DEBUG HANDLER - ОТКЛЮЧЕН (дублирует web_app_data_handler)
-# @dp.message(F.web_app_data)
-# async def debug_webapp_trigger(message: types.Message):
-#     logging.info(f"DEBUG: CAUGHT WEB_APP_DATA via explicit filter! Data: {message.web_app_data.data}")
-#     # Forward to real handler
-#     await web_app_data_handler(message)
+# DEBUG HANDLER - ВКЛЮЧЕН
+@dp.message(F.web_app_data)
+async def debug_webapp_trigger(message: types.Message):
+    logging.info(f"DEBUG: CAUGHT WEB_APP_DATA via explicit filter! Data: {message.web_app_data.data}")
+    # Forward to real handler
+    await web_app_data_handler(message)
 
 # Catch-all for diagnostics (will block if matched, so make it specific or use middleware)
 # Let's just rely on the above. If F.web_app_data matches, it will log.
