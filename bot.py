@@ -1,6 +1,7 @@
 import asyncio
 import sqlite3
 import json
+import base64
 import logging
 from datetime import datetime
 from aiogram import Bot, Dispatcher, types, F
@@ -238,7 +239,6 @@ async def start_cmd(message: types.Message):
                 payload += '=' * (4 - padding)
             
             # 2. Декодируем Base64
-            import base64
             from urllib.parse import unquote
             decoded_bytes = base64.urlsafe_b64decode(payload)
             decoded_str = decoded_bytes.decode('utf-8')
@@ -341,8 +341,18 @@ async def start_cmd(message: types.Message):
         [KeyboardButton(text="📊 Бюджеты"), KeyboardButton(text="📈 Отчеты")],
         [KeyboardButton(text="💰 Баланс"), KeyboardButton(text="📋 Транзакции")]
     ]
+    # Получаем имя пользователя
+    user_name = message.from_user.first_name or "друг"
+    
     await message.answer(
-        "Привет! Я твой финансовый помощник 2.0. \n\nТеперь я понимаю текст:\n🔹 `1000 Еда` — расход\n🔹 `+5000 ЗП` — доход\n🔹 `!1000 Отпуск` — в копилку\n\n**📱 Нажми 'Мои Деньги' для MiniApp:**",
+        f"👋 **Привет, {user_name}!**\n\n"
+        f"Я — **FinGoal**, твой персональный финансовый помощник 💰\n\n"
+        f"📱 **Нажми '📱 Мои Деньги'** чтобы открыть MiniApp\n\n"
+        f"Или пиши мне текстом:\n"
+        f"🔹 `1000 Еда` — записать расход\n"
+        f"🔹 `+5000 ЗП` — записать доход\n"
+        f"🔹 `!1000 Отпуск` — отложить в копилку\n\n"
+        f"Удачного планирования! 🚀",
         reply_markup=ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True),
         parse_mode="Markdown"
     )
@@ -792,10 +802,7 @@ async def budget_list_view(callback: types.CallbackQuery):
     await callback.message.answer(msg, parse_mode="Markdown")
     await callback.answer()
 
-
 # --- 7. ОТЧЕТЫ (WEB APP) ---
-import json
-import base64
 
 @dp.message(F.text == "📈 Отчеты")
 async def reports_menu(message: types.Message):

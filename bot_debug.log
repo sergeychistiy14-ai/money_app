@@ -1,0 +1,722 @@
+2026-01-16 23:36:26,348 - root - INFO - API server started on port 8080
+2026-01-16 23:36:26,591 - aiogram.dispatcher - INFO - Start polling
+2026-01-16 23:36:26,681 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-16 23:36:32,910 - aiogram.event - INFO - Update id=489110901 is handled. Duration 275 ms by bot id=8503104964
+2026-01-16 23:36:41,280 - aiogram.event - INFO - Update id=489110902 is handled. Duration 116 ms by bot id=8503104964
+2026-01-16 23:36:43,716 - aiogram.event - INFO - Update id=489110903 is handled. Duration 108 ms by bot id=8503104964
+2026-01-16 23:41:23,896 - root - INFO - API server started on port 8080
+2026-01-16 23:41:24,136 - aiogram.dispatcher - INFO - Start polling
+2026-01-16 23:41:24,215 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-16 23:41:32,071 - aiogram.event - INFO - Update id=489110905 is handled. Duration 303 ms by bot id=8503104964
+2026-01-16 23:41:48,560 - aiogram.event - INFO - Update id=489110906 is handled. Duration 264 ms by bot id=8503104964
+2026-01-16 23:41:50,770 - aiogram.event - INFO - Update id=489110907 is handled. Duration 267 ms by bot id=8503104964
+2026-01-16 23:45:16,821 - root - INFO - API server started on port 8080
+2026-01-16 23:45:17,080 - aiogram.dispatcher - INFO - Start polling
+2026-01-16 23:45:17,173 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-16 23:45:21,729 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=🎯 Цели, web_app_data=None
+2026-01-16 23:45:21,729 - aiogram.event - INFO - Update id=489110908 is handled. Duration 0 ms by bot id=8503104964
+2026-01-16 23:45:25,016 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=/start, web_app_data=None
+2026-01-16 23:45:25,017 - aiogram.event - INFO - Update id=489110909 is handled. Duration 0 ms by bot id=8503104964
+2026-01-16 23:45:44,759 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=/start, web_app_data=None
+2026-01-16 23:45:44,760 - aiogram.event - INFO - Update id=489110910 is handled. Duration 2 ms by bot id=8503104964
+2026-01-16 23:47:03,061 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=/start, web_app_data=None
+2026-01-16 23:47:03,062 - aiogram.event - INFO - Update id=489110911 is handled. Duration 0 ms by bot id=8503104964
+2026-01-16 23:47:13,974 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=/start, web_app_data=None
+2026-01-16 23:47:13,975 - aiogram.event - INFO - Update id=489110912 is handled. Duration 1 ms by bot id=8503104964
+2026-01-16 23:47:18,864 - root - INFO - DEBUG: CAUGHT UPDATE: content_type=text, text=/start, web_app_data=None
+2026-01-16 23:47:18,865 - aiogram.event - INFO - Update id=489110913 is handled. Duration 1 ms by bot id=8503104964
+2026-01-17 12:43:57,929 - root - INFO - API server started on port 8080
+2026-01-17 12:43:58,166 - aiogram.dispatcher - INFO - Start polling
+2026-01-17 12:43:58,241 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-17 12:44:25,797 - aiogram.event - INFO - Update id=489110916 is handled. Duration 266 ms by bot id=8503104964
+2026-01-17 12:50:12,873 - aiogram.event - INFO - Update id=489110917 is handled. Duration 269 ms by bot id=8503104964
+2026-01-17 12:50:30,765 - aiogram.event - INFO - Update id=489110918 is handled. Duration 273 ms by bot id=8503104964
+2026-01-17 12:51:03,033 - aiogram.event - INFO - Update id=489110919 is handled. Duration 5 ms by bot id=8503104964
+2026-01-17 12:51:10,491 - aiogram.event - INFO - Update id=489110920 is handled. Duration 297 ms by bot id=8503104964
+2026-01-17 12:52:25,611 - aiogram.event - INFO - Update id=489110921 is handled. Duration 305 ms by bot id=8503104964
+2026-01-17 12:59:25,589 - aiogram.event - INFO - Update id=489110922 is handled. Duration 273 ms by bot id=8503104964
+2026-01-17 12:59:27,676 - aiogram.event - INFO - Update id=489110923 is handled. Duration 150 ms by bot id=8503104964
+2026-01-17 13:08:12,874 - aiogram.event - INFO - Update id=489110924 is handled. Duration 299 ms by bot id=8503104964
+2026-01-17 13:09:40,018 - aiogram.event - INFO - Update id=489110925 is handled. Duration 294 ms by bot id=8503104964
+2026-01-17 13:09:42,247 - aiogram.event - INFO - Update id=489110926 is handled. Duration 269 ms by bot id=8503104964
+2026-01-17 13:09:43,506 - root - INFO - DEBUG: Category type selected: expense
+2026-01-17 13:09:43,663 - root - INFO - DEBUG: State set to CategoryStates.waiting_for_name
+2026-01-17 13:09:43,806 - aiogram.event - INFO - Update id=489110927 is handled. Duration 301 ms by bot id=8503104964
+2026-01-17 13:09:48,019 - root - INFO - DEBUG: Category name entered: Такси
+2026-01-17 13:09:48,134 - aiogram.event - INFO - Update id=489110928 is handled. Duration 117 ms by bot id=8503104964
+2026-01-17 16:01:07,868 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-17 16:01:07,869 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-17 16:13:20,802 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-17 17:08:41,714 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-17 17:08:41,716 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-17 17:08:43,318 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-17 17:08:44,622 - aiogram.event - INFO - Update id=489110929 is handled. Duration 1301 ms by bot id=8503104964
+2026-01-17 17:08:44,640 - aiogram.event - INFO - Update id=489110932 is handled. Duration 1318 ms by bot id=8503104964
+2026-01-17 17:08:44,674 - aiogram.event - INFO - Update id=489110930 is handled. Duration 1353 ms by bot id=8503104964
+2026-01-17 17:08:47,180 - aiogram.event - INFO - Update id=489110931 is not handled. Duration 3858 ms by bot id=8503104964
+2026-01-17 17:08:47,180 - aiogram.event - ERROR - Cause exception while process update id=489110931 by bot id=8503104964
+TelegramNetworkError: HTTP Client says - ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [Connection reset by peer]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 1025, in _wrap_create_connection
+    return await self._loop.create_connection(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/base_events.py", line 1089, in create_connection
+    transport, protocol = await self._create_connection_transport(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/base_events.py", line 1119, in _create_connection_transport
+    await waiter
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/selector_events.py", line 853, in _read_ready__data_received
+    data = self._sock.recv(self.max_size)
+ConnectionResetError: [Errno 54] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/client/session/aiohttp.py", line 181, in make_request
+    async with session.post(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/client.py", line 1197, in __aenter__
+    self._resp = await self._coro
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/client.py", line 581, in _request
+    conn = await self._connector.connect(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 544, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 944, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 1257, in _create_direct_connection
+    raise last_exc
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 1226, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiohttp/connector.py", line 1033, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [Connection reset by peer]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 283, in start_cmd
+    await message.delete()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/methods/base.py", line 84, in emit
+    return await bot(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/client/bot.py", line 482, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/client/session/base.py", line 254, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/client/session/aiohttp.py", line 188, in make_request
+    raise TelegramNetworkError(method=method, message=f"{type(e).__name__}: {e}")
+aiogram.exceptions.TelegramNetworkError: HTTP Client says - ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [Connection reset by peer]
+2026-01-17 19:45:59,168 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-17 19:45:59,170 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-17 21:43:02,703 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-17 21:43:02,704 - aiogram.dispatcher - WARNING - Sleep for 1.292265 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-17 22:55:55,793 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-17 22:55:55,795 - aiogram.dispatcher - WARNING - Sleep for 1.678734 seconds and try again... (tryings = 2, bot id = 8503104964)
+2026-01-17 22:56:07,854 - aiogram.dispatcher - INFO - Connection established (tryings = 3, bot id = 8503104964)
+2026-01-18 00:04:57,323 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 00:04:57,327 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 00:05:08,578 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 00:55:03,163 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 00:55:03,166 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 00:55:14,391 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 01:11:04,917 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 01:11:04,918 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 01:11:16,148 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 01:29:08,313 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 01:29:08,314 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 01:29:19,557 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 01:45:49,359 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 01:45:49,361 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 01:46:00,583 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 02:02:51,911 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 02:02:51,911 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 02:03:03,130 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 02:18:53,686 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 02:18:53,686 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 02:19:04,902 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 02:57:36,265 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 02:57:36,266 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 02:57:47,574 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 03:32:42,640 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 03:32:42,647 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 03:32:53,874 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 03:59:00,742 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 03:59:00,743 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 03:59:12,181 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 04:18:38,674 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 04:18:38,676 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 04:35:36,196 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 04:35:36,197 - aiogram.dispatcher - WARNING - Sleep for 1.289645 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 04:35:47,795 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 04:52:39,138 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 04:52:39,139 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 04:52:50,435 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 05:27:28,459 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 05:27:28,461 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 05:27:39,726 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 05:46:45,437 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 05:46:45,439 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 05:46:56,672 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 06:04:59,460 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 06:04:59,462 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 06:05:10,696 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 06:33:48,882 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 06:33:48,886 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 06:34:00,118 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 07:10:14,778 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 07:10:14,780 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 07:10:26,075 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 07:27:53,587 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 07:27:53,591 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 07:28:04,817 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 07:47:42,524 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 07:47:42,525 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 08:03:25,321 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [Connection reset by peer]
+2026-01-18 08:03:25,321 - aiogram.dispatcher - WARNING - Sleep for 1.503841 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 08:03:37,085 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 08:18:49,371 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 08:18:49,373 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 08:36:40,179 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 08:36:40,180 - aiogram.dispatcher - WARNING - Sleep for 1.293974 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 08:36:51,764 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 08:56:11,083 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 08:56:11,085 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 09:19:07,368 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 09:19:07,369 - aiogram.dispatcher - WARNING - Sleep for 1.417226 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 09:19:19,016 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 09:36:31,300 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 09:36:31,301 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 09:36:42,580 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 09:55:14,586 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 09:55:14,587 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 09:55:25,883 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 10:13:57,761 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 10:13:57,762 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 10:14:09,012 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 10:36:42,608 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 10:36:42,609 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 10:36:53,938 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 10:53:47,435 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 10:53:47,436 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 11:08:58,649 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 11:08:58,651 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 11:08:58,651 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 11:09:09,863 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 11:39:37,187 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 11:39:37,188 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 11:39:48,419 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 11:55:49,154 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 11:55:49,154 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 11:56:00,506 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 12:12:11,254 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 12:12:11,255 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 12:12:22,685 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 12:57:46,203 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 12:57:46,205 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 12:57:57,487 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 13:23:01,322 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 13:23:01,324 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 13:23:12,580 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 13:38:53,111 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 13:38:53,111 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 13:39:04,333 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 14:12:33,436 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 14:12:33,438 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 14:12:44,656 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 14:58:27,643 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 14:58:27,644 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 14:58:38,862 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 15:14:29,516 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 15:14:29,517 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 15:14:40,747 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 15:42:14,719 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 15:42:14,720 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 15:42:25,958 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 16:16:23,250 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 16:16:23,251 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 16:16:34,528 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 17:02:21,121 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 17:02:21,122 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 17:02:32,642 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 17:20:02,533 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 17:20:02,534 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 17:20:13,769 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 17:44:54,533 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 17:44:54,535 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 18:00:05,830 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 18:00:05,832 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-01-18 18:00:05,833 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 18:00:17,067 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 18:18:29,848 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 18:18:29,848 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 18:28:49,498 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 18:28:49,499 - aiogram.dispatcher - WARNING - Sleep for 1.412233 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 18:44:22,971 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 19:03:48,583 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 19:03:48,584 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 19:29:09,004 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 19:29:09,005 - aiogram.dispatcher - WARNING - Sleep for 1.297346 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-18 19:29:20,527 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 8503104964)
+2026-01-18 19:45:51,953 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 19:45:51,954 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 19:46:03,203 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 20:20:23,997 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 20:20:23,999 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 20:20:35,284 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 20:30:02,005 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 20:30:02,006 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 20:30:13,229 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 21:03:28,496 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 21:03:28,497 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 21:03:39,708 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 21:20:42,213 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 21:20:42,215 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 21:31:22,932 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 22:04:02,711 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 22:04:02,712 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 22:04:13,909 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 22:21:02,665 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 22:21:02,666 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 22:21:13,909 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 22:46:22,510 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-18 22:46:22,511 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-18 22:46:33,475 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-18 22:46:33,849 - aiogram.event - INFO - Update id=489110933 is handled. Duration 372 ms by bot id=8503104964
+2026-01-18 22:47:06,662 - aiogram.event - INFO - Update id=489110934 is handled. Duration 275 ms by bot id=8503104964
+2026-01-18 22:50:18,176 - aiogram.event - INFO - Update id=489110935 is handled. Duration 249 ms by bot id=8503104964
+2026-01-18 22:50:35,492 - aiogram.event - INFO - Update id=489110936 is handled. Duration 251 ms by bot id=8503104964
+2026-01-18 22:50:49,173 - aiogram.event - INFO - Update id=489110937 is handled. Duration 168 ms by bot id=8503104964
+2026-01-18 22:50:55,061 - aiogram.event - INFO - Update id=489110938 is handled. Duration 489 ms by bot id=8503104964
+2026-01-18 22:59:07,649 - aiogram.event - INFO - Update id=489110939 is handled. Duration 319 ms by bot id=8503104964
+2026-01-18 22:59:25,073 - aiogram.event - INFO - Update id=489110940 is handled. Duration 290 ms by bot id=8503104964
+2026-01-18 23:12:44,032 - aiogram.event - INFO - Update id=489110941 is handled. Duration 275 ms by bot id=8503104964
+2026-01-19 03:04:08,689 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 03:04:08,690 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 03:04:09,907 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-19 03:04:10,154 - aiogram.event - INFO - Update id=489110942 is handled. Duration 245 ms by bot id=8503104964
+2026-01-19 03:04:10,173 - aiogram.event - INFO - Update id=489110943 is handled. Duration 264 ms by bot id=8503104964
+2026-01-19 06:01:50,678 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 06:01:50,680 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 08:56:27,675 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 08:56:27,677 - aiogram.dispatcher - WARNING - Sleep for 1.511607 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-19 10:20:42,990 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 10:20:42,992 - aiogram.dispatcher - WARNING - Sleep for 1.953571 seconds and try again... (tryings = 2, bot id = 8503104964)
+2026-01-19 10:20:55,303 - aiogram.dispatcher - INFO - Connection established (tryings = 3, bot id = 8503104964)
+2026-01-19 12:50:53,863 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 12:50:53,866 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 12:51:05,312 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-19 14:03:17,216 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-01-19 14:03:17,217 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 14:03:28,452 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-19 16:19:13,784 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [Connection reset by peer]
+2026-01-19 16:19:13,786 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 16:19:25,622 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 8503104964)
+2026-01-19 18:30:13,857 - root - INFO - Bot starting (polling mode, no API server)
+2026-01-19 18:30:14,105 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:30:14,186 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:30:40,018 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 18:30:40,019 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:30:40,020 - aiogram.dispatcher - INFO - Polling stopped
+2026-01-19 18:36:38,307 - root - INFO - Bot starting (polling mode, no API server)
+2026-01-19 18:36:38,591 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:36:38,673 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:37:27,335 - aiogram.event - INFO - Update id=489110947 is not handled. Duration 6 ms by bot id=8503104964
+2026-01-19 18:37:27,336 - aiogram.event - ERROR - Cause exception while process update id=489110947 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 315, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:39:33,983 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 18:39:33,985 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:39:33,986 - aiogram.dispatcher - INFO - Polling stopped
+2026-01-19 18:40:00,115 - root - INFO - API server started on port 8080
+2026-01-19 18:40:00,352 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:40:00,442 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:40:31,579 - aiogram.event - INFO - Update id=489110948 is not handled. Duration 6 ms by bot id=8503104964
+2026-01-19 18:40:31,579 - aiogram.event - ERROR - Cause exception while process update id=489110948 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 335, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:40:36,073 - aiogram.event - INFO - Update id=489110949 is handled. Duration 307 ms by bot id=8503104964
+2026-01-19 18:40:38,216 - aiogram.event - INFO - Update id=489110950 is not handled. Duration 8 ms by bot id=8503104964
+2026-01-19 18:40:38,216 - aiogram.event - ERROR - Cause exception while process update id=489110950 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 335, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:40:40,385 - aiogram.event - INFO - Update id=489110951 is handled. Duration 141 ms by bot id=8503104964
+2026-01-19 18:40:47,472 - aiogram.event - INFO - Update id=489110952 is handled. Duration 239 ms by bot id=8503104964
+2026-01-19 18:40:49,320 - aiogram.event - INFO - Update id=489110953 is handled. Duration 255 ms by bot id=8503104964
+2026-01-19 18:41:04,916 - aiogram.event - INFO - Update id=489110954 is handled. Duration 338 ms by bot id=8503104964
+2026-01-19 18:41:11,245 - aiogram.event - INFO - Update id=489110955 is not handled. Duration 9 ms by bot id=8503104964
+2026-01-19 18:41:11,245 - aiogram.event - ERROR - Cause exception while process update id=489110955 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 335, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:42:15,435 - aiogram.event - INFO - Update id=489110956 is handled. Duration 267 ms by bot id=8503104964
+2026-01-19 18:42:31,867 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 18:42:31,869 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:42:31,870 - aiogram.dispatcher - INFO - Polling stopped
+2026-01-19 18:43:01,321 - root - INFO - API server started on port 8080
+2026-01-19 18:43:01,590 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:43:01,679 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:43:25,025 - aiogram.event - INFO - Update id=489110959 is not handled. Duration 4 ms by bot id=8503104964
+2026-01-19 18:43:25,025 - aiogram.event - ERROR - Cause exception while process update id=489110959 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 336, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:43:42,984 - aiogram.event - INFO - Update id=489110960 is not handled. Duration 4 ms by bot id=8503104964
+2026-01-19 18:43:42,985 - aiogram.event - ERROR - Cause exception while process update id=489110960 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 336, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:44:09,980 - aiogram.event - INFO - Update id=489110961 is not handled. Duration 7 ms by bot id=8503104964
+2026-01-19 18:44:09,981 - aiogram.event - ERROR - Cause exception while process update id=489110961 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 336, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:44:13,294 - aiogram.event - INFO - Update id=489110962 is handled. Duration 265 ms by bot id=8503104964
+2026-01-19 18:44:17,932 - aiogram.event - INFO - Update id=489110963 is handled. Duration 95 ms by bot id=8503104964
+2026-01-19 18:44:21,336 - aiogram.event - INFO - Update id=489110964 is handled. Duration 2 ms by bot id=8503104964
+2026-01-19 18:44:45,319 - aiogram.event - INFO - Update id=489110965 is handled. Duration 264 ms by bot id=8503104964
+2026-01-19 18:44:47,739 - aiogram.event - INFO - Update id=489110966 is handled. Duration 124 ms by bot id=8503104964
+2026-01-19 18:44:50,754 - aiogram.event - INFO - Update id=489110967 is handled. Duration 184 ms by bot id=8503104964
+2026-01-19 18:44:55,737 - aiogram.event - INFO - Update id=489110968 is handled. Duration 161 ms by bot id=8503104964
+2026-01-19 18:44:57,561 - aiogram.event - INFO - Update id=489110969 is handled. Duration 296 ms by bot id=8503104964
+2026-01-19 18:45:57,283 - aiogram.event - INFO - Update id=489110970 is handled. Duration 411 ms by bot id=8503104964
+2026-01-19 18:45:59,425 - aiogram.event - INFO - Update id=489110971 is handled. Duration 229 ms by bot id=8503104964
+2026-01-19 18:46:01,896 - aiogram.event - INFO - Update id=489110972 is handled. Duration 286 ms by bot id=8503104964
+2026-01-19 18:46:05,582 - aiogram.event - INFO - Update id=489110973 is handled. Duration 131 ms by bot id=8503104964
+2026-01-19 18:46:08,944 - aiogram.event - INFO - Update id=489110974 is handled. Duration 196 ms by bot id=8503104964
+2026-01-19 18:46:11,551 - aiogram.event - INFO - Update id=489110975 is handled. Duration 239 ms by bot id=8503104964
+2026-01-19 18:46:13,242 - aiogram.event - INFO - Update id=489110976 is handled. Duration 645 ms by bot id=8503104964
+2026-01-19 18:46:16,121 - aiogram.event - INFO - Update id=489110977 is handled. Duration 550 ms by bot id=8503104964
+2026-01-19 18:46:18,372 - aiogram.event - INFO - Update id=489110978 is handled. Duration 163 ms by bot id=8503104964
+2026-01-19 18:46:20,710 - aiogram.event - INFO - Update id=489110979 is handled. Duration 139 ms by bot id=8503104964
+2026-01-19 18:46:36,388 - aiogram.event - INFO - Update id=489110980 is handled. Duration 455 ms by bot id=8503104964
+2026-01-19 18:46:42,241 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 18:46:42,242 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:46:42,243 - aiogram.dispatcher - INFO - Polling stopped
+2026-01-19 18:46:42,495 - aiogram.event - INFO - Update id=489110981 is not handled. Duration 406 ms by bot id=8503104964
+2026-01-19 18:47:19,633 - root - INFO - API server started on port 8080
+2026-01-19 18:47:19,880 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:47:19,954 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:47:56,923 - aiogram.event - INFO - Update id=489110983 is not handled. Duration 7 ms by bot id=8503104964
+2026-01-19 18:47:56,923 - aiogram.event - ERROR - Cause exception while process update id=489110983 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 336, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:48:14,387 - aiogram.event - INFO - Update id=489110984 is not handled. Duration 6 ms by bot id=8503104964
+2026-01-19 18:48:14,387 - aiogram.event - ERROR - Cause exception while process update id=489110984 by bot id=8503104964
+UnboundLocalError: local variable 'base64' referenced before assignment
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 49, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 137, in _wrapped
+    return await self._propagate_event(
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+  File "/Users/sergeychist/Desktop/Finance/money_app/bot.py", line 336, in start_cmd
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+UnboundLocalError: local variable 'base64' referenced before assignment
+2026-01-19 18:50:10,484 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 18:50:10,487 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:50:10,488 - aiogram.dispatcher - INFO - Polling stopped
+2026-01-19 18:50:22,352 - root - INFO - API server started on port 8080
+2026-01-19 18:50:22,612 - aiogram.dispatcher - INFO - Start polling
+2026-01-19 18:50:22,693 - aiogram.dispatcher - INFO - Run polling for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 18:50:48,452 - aiogram.event - INFO - Update id=489110985 is handled. Duration 306 ms by bot id=8503104964
+2026-01-19 18:50:54,864 - aiogram.event - INFO - Update id=489110986 is handled. Duration 133 ms by bot id=8503104964
+2026-01-19 18:51:08,498 - root - INFO - DEBUG: WEB APP DATA RECEIVED: {"t":"expense","a":"1500","c":"Химчистка","action":"add_tx"}
+2026-01-19 18:51:09,185 - aiogram.event - INFO - Update id=489110987 is handled. Duration 689 ms by bot id=8503104964
+2026-01-19 18:51:15,070 - aiogram.event - INFO - Update id=489110988 is handled. Duration 122 ms by bot id=8503104964
+2026-01-19 18:52:10,704 - aiogram.event - INFO - Update id=489110989 is handled. Duration 272 ms by bot id=8503104964
+2026-01-19 18:56:05,023 - aiogram.event - INFO - Update id=489110990 is handled. Duration 267 ms by bot id=8503104964
+2026-01-19 18:58:27,543 - aiogram.event - INFO - Update id=489110992 is handled. Duration 449 ms by bot id=8503104964
+2026-01-19 18:58:27,597 - aiogram.event - INFO - Update id=489110991 is handled. Duration 515 ms by bot id=8503104964
+2026-01-19 18:58:27,618 - aiogram.event - INFO - Update id=489110993 is handled. Duration 519 ms by bot id=8503104964
+2026-01-19 19:22:23,849 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:23,851 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8503104964)
+2026-01-19 19:22:28,986 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:28,986 - aiogram.dispatcher - WARNING - Sleep for 1.310634 seconds and try again... (tryings = 1, bot id = 8503104964)
+2026-01-19 19:22:34,924 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:34,925 - aiogram.dispatcher - WARNING - Sleep for 1.771827 seconds and try again... (tryings = 2, bot id = 8503104964)
+2026-01-19 19:22:41,582 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:41,583 - aiogram.dispatcher - WARNING - Sleep for 2.183260 seconds and try again... (tryings = 3, bot id = 8503104964)
+2026-01-19 19:22:49,124 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:49,126 - aiogram.dispatcher - WARNING - Sleep for 2.956040 seconds and try again... (tryings = 4, bot id = 8503104964)
+2026-01-19 19:22:58,028 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:22:58,028 - aiogram.dispatcher - WARNING - Sleep for 3.836554 seconds and try again... (tryings = 5, bot id = 8503104964)
+2026-01-19 19:23:05,925 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:23:05,926 - aiogram.dispatcher - WARNING - Sleep for 4.867900 seconds and try again... (tryings = 6, bot id = 8503104964)
+2026-01-19 19:23:15,547 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:23:15,547 - aiogram.dispatcher - WARNING - Sleep for 5.039208 seconds and try again... (tryings = 7, bot id = 8503104964)
+2026-01-19 19:23:25,696 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 19:23:25,696 - aiogram.dispatcher - WARNING - Sleep for 5.005940 seconds and try again... (tryings = 8, bot id = 8503104964)
+2026-01-19 19:23:29,504 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2026-01-19 19:23:29,506 - aiogram.dispatcher - INFO - Polling stopped for bot @fingoal_bot id=8503104964 - 'FinGoal - учет финаносв'
+2026-01-19 19:23:29,507 - aiogram.dispatcher - INFO - Polling stopped
