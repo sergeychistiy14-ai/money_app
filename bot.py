@@ -1238,7 +1238,9 @@ async def update_user_menu_button(user_id):
         payload = await get_miniapp_data(user_id, limit=10)
         json_str = json.dumps(payload)
         b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
-        url = f"{WEB_APP_URL}?data={b64_data}"
+        # Add timestamp to force cache invalidation
+        ts = int(datetime.now().timestamp())
+        url = f"{WEB_APP_URL}?data={b64_data}&v={ts}"
         
         # Update Button
         await bot.set_chat_menu_button(
