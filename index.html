@@ -635,14 +635,24 @@
 
         // Функция отправки данных через sendData
         function send(action, payload) {
+            alert("1. Start Send: " + action); // Debug 1
             payload.action = action;
             try {
+                if (typeof tg.sendData !== 'function') {
+                    alert("CRITICAL: tg.sendData is NOT a function! Typo? " + typeof tg.sendData);
+                    return;
+                }
+                alert("2. Sending payload..."); // Debug 2
                 tg.sendData(JSON.stringify(payload));
-                // Не закрываем сразу, даем время (хотя sendData должен сам закрыть, но для надежности)
-                setTimeout(() => tg.close(), 500);
+                alert("3. Sent! Waiting to close..."); // Debug 3
+
+                setTimeout(() => {
+                    alert("4. Closing app...");
+                    tg.close();
+                }, 1000);
             } catch (e) {
-                console.error('SendData Error:', e);
-                alert("Ошибка отправки: " + e.message);
+                alert("ERROR: " + e.message);
+                console.error(e);
             }
         }
 
