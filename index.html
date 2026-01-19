@@ -633,11 +633,17 @@
             return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
-        // Функция отправки данных через sendData (работает ТОЛЬКО при открытии через Reply Keyboard)
+        // Функция отправки данных через sendData
         function send(action, payload) {
             payload.action = action;
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
+            try {
+                tg.sendData(JSON.stringify(payload));
+                // Не закрываем сразу, даем время (хотя sendData должен сам закрыть, но для надежности)
+                setTimeout(() => tg.close(), 500);
+            } catch (e) {
+                console.error('SendData Error:', e);
+                alert("Ошибка отправки: " + e.message);
+            }
         }
 
         function submitTx() {
