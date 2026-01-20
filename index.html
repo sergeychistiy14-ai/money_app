@@ -635,24 +635,28 @@
 
         // Функция отправки данных через sendData
         function send(action, payload) {
-            alert("1. Start Send: " + action); // Debug 1
             payload.action = action;
+            console.log('Sending data:', action, payload);
+
             try {
+                // Проверяем доступность sendData
                 if (typeof tg.sendData !== 'function') {
-                    alert("CRITICAL: tg.sendData is NOT a function! Typo? " + typeof tg.sendData);
+                    console.error('tg.sendData not available');
+                    tg.showAlert('Ошибка: sendData недоступен. Попробуйте открыть приложение через кнопку "📱 Мои Деньги" в клавиатуре.');
                     return;
                 }
-                alert("2. Sending payload..."); // Debug 2
-                tg.sendData(JSON.stringify(payload));
-                alert("3. Sent! Waiting to close..."); // Debug 3
 
+                // Отправляем данные
+                tg.sendData(JSON.stringify(payload));
+                console.log('Data sent successfully');
+
+                // Закрываем приложение после небольшой задержки
                 setTimeout(() => {
-                    alert("4. Closing app...");
                     tg.close();
-                }, 1000);
+                }, 300);
             } catch (e) {
-                alert("ERROR: " + e.message);
-                console.error(e);
+                console.error('Send error:', e);
+                tg.showAlert('Ошибка отправки: ' + e.message);
             }
         }
 

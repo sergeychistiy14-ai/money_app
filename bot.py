@@ -31,54 +31,7 @@ logging.basicConfig(
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# DEBUG HANDLER - ВКЛЮЧЕН
-@dp.message(F.web_app_data)
-async def debug_webapp_trigger(message: types.Message):
-    logging.info(f"DEBUG: CAUGHT WEB_APP_DATA via explicit filter! Data: {message.web_app_data.data}")
-    # Forward to real handler
-    await web_app_data_handler(message)
-
-# Catch-all for diagnostics (will block if matched, so make it specific or use middleware)
-# Let's just rely on the above. If F.web_app_data matches, it will log.
-# If it DOES NOT match, we need to know why.
-
-
-# @dp.message()
-# async def log_all_updates(message: types.Message):
-#     logging.info(f"DEBUG: CAUGHT UPDATE: content_type={message.content_type}, text={message.text}, web_app_data={message.web_app_data}")
-#     # Manually propagate if it's strictly debugging? 
-#     # Actually, handlers STOP propagation. 
-#     # If I verify this catches web_app_data, I can call the handler directly.
-#     if message.web_app_data:
-#         logging.info("DEBUG: IT IS WEB_APP_DATA! Calling handler manually...")
-#         await web_app_data_handler(message)
-#         return
-#     # If not, we might block other handlers. 
-#     # In aiogram 3, middleware is better, but this is a quick fix.
-#     # To avoid blocking, we shouldn't return? No, that's not how it works.
-#     # We must RE-ROUTE.
-#     # Hack: check if it's text, if so call text_handler? Too complex.
-#     # BETTER: Just use this to LOG and see what happens, user will retry.
-#     pass 
-    # Wait, 'pass' means it returns None, which aiogram treats as "not handled" -> continues to next handler!
-    # Perfect. 
-    # actually, handler must return logic. if it doesn't return anything (None), aiogram thinks "not processed"? 
-    # "If handler returns None, the dispatcher will continue to check other handlers." -> NO, that's filters.
-    # Handlers consume the event.
-    # So I CANNOT put a catch-all @dp.message() here without blocking everything.
-    
-    # STRATEGY CHANGE: Put it ONLY for web_app_data first, to verify filter?
-    # NO, I need to see if it even Matches.
-    
-    # Let's use MIDDLEWARE logic or just use the log file I already have?
-    # The log file only showed "Update handled". It didn't show content.
-    
-    # OK, I will add this logger but filter it for web_app_data specifically with a broader filter?
-    # Or just inspect content_type "service_message"?
-    
-    # Let's try:
-    # @dp.message(F.content_type.in_({'web_app_data', 'service'}))
-    # async def debug_webapp(...): ...
+# Note: Main web_app_data handler is defined at the end of the file (web_app_data_handler)
 
 
 class GoalStates(StatesGroup):
@@ -1174,22 +1127,7 @@ async def text_handler(message: types.Message, state: FSMContext):
     # Если ничего не подошло - игнорируем (или можно сказать "не понял", но лучше не бесить)
 
 
-# Подключаем этот обработчик ко всем текстовым сообщениям (кроме команд)
-@dp.message(F.text & ~F.text.startswith('/'))
-@dp.message(F.text & ~F.text.startswith('/'))
-async def text_handler(message: types.Message, state: FSMContext):
-    # Если есть активное состояние (например, ввод имени цели), не парсим текст как транзакцию
-    current_state = await state.get_state()
-    # logging.info(f"DEBUG: text_handler called. State: {current_state}")
-    if current_state:
-        logging.info(f"DEBUG: Text handler skipped because of active state: {current_state}")
-        return
-
-    # Пытаемся распарсить
-    if message.text in ["💰 Баланс", "📊 Мой Баланс", "Баланс", "📋 История", "🎯 Цели", "📂 Категории", "📊 Бюджеты", "📈 Отчеты", "📋 Транзакции"]:
-        return 
-    
-    await parse_and_save(message)
+# Note: Removed duplicate text_handler, the one above is used
 
 
 def check_budget_exceeded(user_id, category_name, current_amount):
@@ -1357,7 +1295,8 @@ async def web_app_data_handler(message: types.Message):
                 conn.execute("UPDATE goals SET current_amount = current_amount + ? WHERE id = ? AND user_id = ?", (amount, gid, uid))
                 resp_text = f"💰 Копилка пополнена на {amount} р.!"
 
-        conn.commit()
+            conn.commit()
+            logging.info(f"Transaction committed successfully for user {uid}, action: {action}")
         
         # Update Menu Button (Critical!)
         await update_user_menu_button(uid)
