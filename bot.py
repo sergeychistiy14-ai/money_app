@@ -1787,6 +1787,7 @@ async def get_miniapp_data(user_id, limit=15):
              budgets_list.append({"n": c, "l": l, "s": s})
     
     payload = {
+        "uid": user_id,  # User ID для API запросов
         "tx": tx,
         "g": goals,
         "b": budgets_list,

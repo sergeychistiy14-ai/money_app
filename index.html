@@ -639,7 +639,8 @@
         // Функция отправки данных через HTTP API (работает и через MenuButton!)
         async function send(action, payload) {
             payload.action = action;
-            payload.user_id = tg.initDataUnsafe?.user?.id;
+            // Берём user_id из данных URL (D.uid) или из Telegram API
+            payload.user_id = D.uid || tg.initDataUnsafe?.user?.id;
 
             console.log('Sending via API:', action, payload);
 
