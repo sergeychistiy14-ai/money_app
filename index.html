@@ -633,30 +633,49 @@
             return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
-        // Функция отправки данных через sendData
-        function send(action, payload) {
+        // API URL для сервера
+        const API_URL = 'https://fingoal.ru/api/action';
+
+        // Функция отправки данных через HTTP API (работает и через MenuButton!)
+        async function send(action, payload) {
             payload.action = action;
-            console.log('Sending data:', action, payload);
+            payload.user_id = tg.initDataUnsafe?.user?.id;
+
+            console.log('Sending via API:', action, payload);
+
+            if (!payload.user_id) {
+                tg.showAlert('Ошибка: не удалось получить ID пользователя');
+                return;
+            }
 
             try {
-                // Проверяем доступность sendData
-                if (typeof tg.sendData !== 'function') {
-                    console.error('tg.sendData not available');
-                    tg.showAlert('Ошибка: sendData недоступен. Попробуйте открыть приложение через кнопку "📱 Мои Деньги" в клавиатуре.');
-                    return;
-                }
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-                // Отправляем данные
-                tg.sendData(JSON.stringify(payload));
-                console.log('Data sent successfully');
+                const result = await response.json();
 
-                // Закрываем приложение после небольшой задержки
-                setTimeout(() => {
+                if (result.status === 'ok') {
+                    console.log('API success:', result.message);
                     tg.close();
-                }, 300);
+                } else {
+                    console.error('API error:', result.message);
+                    tg.showAlert('Ошибка: ' + result.message);
+                }
             } catch (e) {
-                console.error('Send error:', e);
-                tg.showAlert('Ошибка отправки: ' + e.message);
+                console.error('Fetch error:', e);
+                // Fallback на sendData если API недоступен
+                if (typeof tg.sendData === 'function') {
+                    console.log('Falling back to sendData');
+                    tg.sendData(JSON.stringify(payload));
+                    setTimeout(() => tg.close(), 300);
+                } else {
+                    tg.showAlert('Ошибка соединения с сервером');
+                }
             }
         }
 

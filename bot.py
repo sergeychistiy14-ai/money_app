@@ -213,25 +213,86 @@ def save_transaction(user_id, amount, category, t_type, description=None):
 #         logging.error(f"Ошибка web_app_data: {e}")
 #         await message.answer("❌ Ошибка при сохранении данных.")
 
-
 # --- 2. API ОБРАБОТЧИК (Прямой POST запрос) ---
-# Для работы этого метода нужен открытый порт 8080
-async def handle_api_save(request):
+# Универсальный API для MiniApp (работает через MenuButton и KeyboardButton)
+
+async def handle_api_action(request):
+    """Обработчик всех действий из MiniApp через HTTP API"""
+    # CORS headers
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+    }
+    
+    # Handle preflight
+    if request.method == 'OPTIONS':
+        return web.Response(headers=headers)
+    
     try:
         data = await request.json()
+        action = data.get('action')
         user_id = data.get('user_id')
+        
+        if not user_id:
+            return web.json_response({"status": "error", "message": "user_id required"}, status=400, headers=headers)
+        
+        resp_text = "✅ Данные обновлены"
+        
+        with sqlite3.connect(DB_PATH) as conn:
+            if action == "add_tx":
+                t_type = data.get('t')  # income/expense
+                amount = float(data.get('a'))
+                cat = data.get('c')
+                desc = data.get('d', '')
+                date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                conn.execute("INSERT INTO transactions (user_id, amount, category, type, date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                             (user_id, amount, cat, t_type, date_str, desc))
+                
+                icon = "📉" if t_type == "expense" else "📈"
+                resp_text = f"✅ Добавлено: {amount:.0f} р. ({cat})"
+                
+            elif action == "add_goal":
+                name = data.get('n')
+                target = float(data.get('t'))
+                conn.execute("INSERT INTO goals (user_id, name, target_amount, current_amount, created_at) VALUES (?, ?, ?, 0, ?)",
+                             (user_id, name, target, datetime.now().strftime("%Y-%m-%d")))
+                resp_text = f"🎯 Цель '{name}' создана!"
+                
+            elif action == "add_budget":
+                cat = data.get('c')
+                limit = float(data.get('l'))
+                m_key = datetime.now().strftime("%Y-%m")
+                conn.execute("DELETE FROM budgets WHERE user_id = ? AND category_name = ? AND month_year = ?", (user_id, cat, m_key))
+                conn.execute("INSERT INTO budgets (user_id, category_name, amount, month_year) VALUES (?, ?, ?, ?)", (user_id, cat, limit, m_key))
+                resp_text = f"⚖️ Бюджет на '{cat}' установлен!"
 
-        save_transaction(user_id, data.get('amount'), data.get('category'), data.get('type'))
-
-        icon = "📉" if data.get('type') == 'expense' else "📈"
-        await bot.send_message(
-            user_id,
-            f"✅ **Запись через API!**\n{icon} {data.get('amount')} р. ({data.get('category')})",
-            parse_mode="Markdown"
-        )
-        return web.json_response({"status": "ok"})
+            elif action == "top_up_goal":
+                gid = data.get('id')
+                amount = float(data.get('a'))
+                conn.execute("UPDATE goals SET current_amount = current_amount + ? WHERE id = ? AND user_id = ?", (amount, gid, user_id))
+                resp_text = f"💰 Копилка пополнена на {amount:.0f} р.!"
+            
+            else:
+                return web.json_response({"status": "error", "message": f"Unknown action: {action}"}, status=400, headers=headers)
+            
+            conn.commit()
+        
+        # Отправляем уведомление в бот
+        try:
+            await bot.send_message(user_id, resp_text, parse_mode="Markdown")
+        except Exception as e:
+            logging.error(f"Failed to send message: {e}")
+        
+        # Обновляем Menu Button
+        await update_user_menu_button(user_id)
+        
+        return web.json_response({"status": "ok", "message": resp_text}, headers=headers)
+        
     except Exception as e:
-        return web.json_response({"status": "error", "message": str(e)}, status=400)
+        logging.error(f"API Error: {e}")
+        return web.json_response({"status": "error", "message": str(e)}, status=400, headers=headers)
 
 
 # --- 3. ОБЫЧНЫЕ КОМАНДЫ БОТА ---
@@ -1817,7 +1878,7 @@ async def main():
 
     # Настройка API сервера (aiohttp)
     app = web.Application()
-    app.router.add_post('/api/save', handle_api_save)
+    app.router.add_route('*', '/api/action', handle_api_action)  # Новый универсальный эндпоинт
     runner = web.AppRunner(app)
     await runner.setup()
 
