@@ -596,11 +596,27 @@
         function updateCategoryList() {
             const select = document.getElementById('tx-cat');
             const newInput = document.getElementById('tx-cat-new');
-            select.innerHTML = '<option value="">-- Выберите категорию --</option>';
+            const txType = document.getElementById('tx-type').value; // expense или income
 
-            // Добавляем категории из данных (D.c содержит список категорий)
-            if (D.c && D.c.length > 0) {
-                D.c.forEach(cat => {
+            select.innerHTML = '<option value="">-- Выберите категорию --</option>';
+            newInput.classList.add('hidden');
+
+            // D.c теперь объект {expense: [...], income: [...]}
+            // Для совместимости проверяем старый формат (массив)
+            let categories = [];
+            if (D.c) {
+                if (Array.isArray(D.c)) {
+                    // Старый формат - простой массив
+                    categories = D.c;
+                } else if (D.c[txType]) {
+                    // Новый формат - объект с expense/income
+                    categories = D.c[txType];
+                }
+            }
+
+            // Добавляем категории
+            if (categories.length > 0) {
+                categories.forEach(cat => {
                     const opt = document.createElement('option');
                     opt.value = cat;
                     opt.textContent = cat;

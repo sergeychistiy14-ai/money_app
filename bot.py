@@ -1762,9 +1762,29 @@ async def get_miniapp_data(user_id, limit=15):
         bud_rows = conn.execute("SELECT category_name, amount FROM budgets WHERE user_id = ? AND month_year = ?", (user_id, month_key)).fetchall()
         buds = {r[0]: r[1] for r in bud_rows}
         
-        # 4. Categories
-        cat_rows = conn.execute("SELECT name FROM categories WHERE user_id = ?", (user_id,)).fetchall()
-        cats = [r[0] for r in cat_rows]
+        # 4. Categories - включаем и из таблицы categories, и уникальные из транзакций
+        # Разделяем по типу для удобства фильтрации в MiniApp
+        cat_rows = conn.execute("SELECT DISTINCT name, type FROM categories WHERE user_id = ?", (user_id,)).fetchall()
+        tx_cats = conn.execute("SELECT DISTINCT category, type FROM transactions WHERE user_id = ?", (user_id,)).fetchall()
+        
+        # Объединяем и разделяем по типу
+        expense_cats = set()
+        income_cats = set()
+        for name, ctype in cat_rows:
+            if ctype == 'expense':
+                expense_cats.add(name)
+            else:
+                income_cats.add(name)
+        for name, ctype in tx_cats:
+            if ctype == 'expense':
+                expense_cats.add(name)
+            else:
+                income_cats.add(name)
+        
+        cats = {
+            "expense": sorted(list(expense_cats)),
+            "income": sorted(list(income_cats))
+        }
         
         # 5. Stats
         summ = conn.execute("SELECT type, SUM(amount) FROM transactions WHERE user_id = ? AND date >= ? GROUP BY type", (user_id, month_start)).fetchall()
