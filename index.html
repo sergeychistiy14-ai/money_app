@@ -552,7 +552,7 @@
                         <div style="display:flex; justify-content:space-between; font-weight:600;"><span>${g.n}</span><span>${p.toFixed(0)}%</span></div>
                         <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">${g.c.toLocaleString()} из ${g.t.toLocaleString()}</div>
                         <div class="pb-container"><div class="pb-fill" style="width:${p}%"></div></div>
-                        <div style="margin-top:10px; display:flex; justify-content:flex-end;"><div style="color:var(--accent); font-size:14px; font-weight:600;" onclick="topUp(${g.i})">Пополнить</div></div>`;
+                        <div style="margin-top:10px; display:flex; justify-content:flex-end;"><button type="button" style="background:none; border:none; color:var(--accent); font-size:14px; font-weight:600; cursor:pointer; padding:8px 12px;" onclick="topUp(${g.i})">💰 Пополнить</button></div>`;
                     gList.appendChild(div);
                 });
             } else { document.getElementById('no-goals').classList.remove('hidden'); }
