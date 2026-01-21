@@ -453,6 +453,24 @@
         </div>
     </div>
 
+    <!-- Модальное окно для пополнения цели -->
+    <div id="topup-modal"
+        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+        <div
+            style="background:var(--card-bg); border-radius:16px; padding:24px; margin:20px; max-width:300px; width:100%;">
+            <div style="font-size:18px; font-weight:600; margin-bottom:16px;">💰 Пополнить цель</div>
+            <input type="number" id="topup-amount" placeholder="Сумма" inputmode="decimal"
+                style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:16px; margin-bottom:16px; box-sizing:border-box;">
+            <input type="hidden" id="topup-goal-id">
+            <div style="display:flex; gap:12px;">
+                <button onclick="closeTopupModal()"
+                    style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--bg); color:var(--text); font-size:16px; cursor:pointer;">Отмена</button>
+                <button onclick="confirmTopup()"
+                    style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--accent); color:white; font-size:16px; font-weight:600; cursor:pointer;">Добавить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -725,13 +743,29 @@
         }
 
         function topUp(id) {
-            // Используем prompt - он работает в WebView
-            const val = prompt("Сколько добавить?");
-            if (val && !isNaN(parseFloat(val))) {
-                send('top_up_goal', { id: id, a: parseFloat(val) });
-            } else if (val) {
-                tg.showAlert("Введите корректное число");
+            // Показываем модальное окно
+            document.getElementById('topup-goal-id').value = id;
+            document.getElementById('topup-amount').value = '';
+            const modal = document.getElementById('topup-modal');
+            modal.style.display = 'flex';
+            document.getElementById('topup-amount').focus();
+        }
+
+        function closeTopupModal() {
+            document.getElementById('topup-modal').style.display = 'none';
+        }
+
+        function confirmTopup() {
+            const id = parseInt(document.getElementById('topup-goal-id').value);
+            const amount = parseFloat(document.getElementById('topup-amount').value);
+
+            if (!amount || isNaN(amount) || amount <= 0) {
+                tg.showAlert('Введите корректную сумму');
+                return;
             }
+
+            closeTopupModal();
+            send('top_up_goal', { id: id, a: amount });
         }
 
         // Инициализация списка категорий при загрузке
