@@ -388,7 +388,66 @@
         <div class="card-grid" id="budget-list"></div>
     </div>
 
-    <!-- VIEW: CHARTS (For Report Link) -->
+    <!-- VIEW: REPORTS (Integrated) -->
+    <div id="view-reports" class="view hidden">
+        <h1>Отчет 📊</h1>
+
+        <!-- Период -->
+        <div id="report-period" class="balance-card" style="text-align:center; padding:16px;">
+            <span id="reports-month" style="font-size:18px; font-weight:600;">Текущий месяц</span>
+        </div>
+
+        <!-- Круговая диаграмма расходов -->
+        <div class="modern-card" style="margin-top:16px;">
+            <div style="font-size:16px; font-weight:600; margin-bottom:12px;">Расходы по категориям</div>
+            <div style="position:relative; height:220px;">
+                <canvas id="expense-chart"></canvas>
+                <div id="expense-total"
+                    style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+                    <div style="font-size:12px; color:var(--text-secondary);">Всего</div>
+                    <div style="font-size:22px; font-weight:700; color:var(--expense);">0 ₽</div>
+                </div>
+            </div>
+            <div id="expense-legend" style="margin-top:16px;"></div>
+        </div>
+
+        <!-- Круговая диаграмма доходов -->
+        <div class="modern-card" style="margin-top:16px;">
+            <div style="font-size:16px; font-weight:600; margin-bottom:12px;">Доходы по категориям</div>
+            <div style="position:relative; height:220px;">
+                <canvas id="income-chart"></canvas>
+                <div id="income-total"
+                    style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+                    <div style="font-size:12px; color:var(--text-secondary);">Всего</div>
+                    <div style="font-size:22px; font-weight:700; color:var(--income);">0 ₽</div>
+                </div>
+            </div>
+            <div id="income-legend" style="margin-top:16px;"></div>
+        </div>
+
+        <!-- Баланс -->
+        <div class="modern-card" style="margin-top:16px;">
+            <div style="font-size:16px; font-weight:600; margin-bottom:12px;">Баланс за период</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:13px; color:var(--text-secondary);">Доходы</div>
+                    <div id="report-income" style="font-size:20px; font-weight:600; color:var(--income);">+0 ₽</div>
+                </div>
+                <div style="font-size:24px; color:var(--text-secondary);">−</div>
+                <div>
+                    <div style="font-size:13px; color:var(--text-secondary);">Расходы</div>
+                    <div id="report-expense" style="font-size:20px; font-weight:600; color:var(--expense);">−0 ₽</div>
+                </div>
+                <div style="font-size:24px; color:var(--text-secondary);">=</div>
+                <div>
+                    <div style="font-size:13px; color:var(--text-secondary);">Итого</div>
+                    <div id="report-balance" style="font-size:20px; font-weight:700;">0 ₽</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: CHARTS (For external Report Link - backward compat) -->
     <div id="view-charts" class="view hidden">
         <h1>Отчет 📊</h1>
         <div class="balance-card">
@@ -420,6 +479,12 @@
                 <path
                     d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z" />
             </svg><span class="tab-label">Бюджеты</span>
+        </button>
+        <button class="tab-btn" onclick="nav('reports')">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+            </svg><span class="tab-label">Отчет</span>
         </button>
     </div>
 
@@ -597,8 +662,13 @@
             document.querySelectorAll('.view').forEach(e => e.classList.add('hidden'));
             document.getElementById('view-' + tab).classList.remove('hidden');
             document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-            const idx = tab === 'home' ? 0 : tab === 'goals' ? 1 : 2;
+            const idx = tab === 'home' ? 0 : tab === 'goals' ? 1 : tab === 'budgets' ? 2 : 3;
             document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+
+            // Рендер отчётов при переходе на вкладку
+            if (tab === 'reports') {
+                renderReports();
+            }
         }
 
         function openAdd() {
@@ -766,6 +836,132 @@
 
             closeTopupModal();
             send('top_up_goal', { id: id, a: amount });
+        }
+
+        // Хранилище для Chart.js инстансов отчётов
+        let expenseChartInstance = null;
+        let incomeChartInstance = null;
+
+        const chartColors = ['#007AFF', '#FF9500', '#FF2D55', '#AF52DE', '#5856D6', '#FFCC00', '#5AC8FA', '#4CD964', '#FF6384', '#36A2EB'];
+
+        function renderReports() {
+            // Группируем транзакции по категориям
+            const expenseByCategory = {};
+            const incomeByCategory = {};
+            let totalExpense = 0;
+            let totalIncome = 0;
+
+            if (D.tx) {
+                D.tx.forEach(t => {
+                    if (t.t === 1) { // expense
+                        expenseByCategory[t.c] = (expenseByCategory[t.c] || 0) + t.a;
+                        totalExpense += t.a;
+                    } else { // income
+                        incomeByCategory[t.c] = (incomeByCategory[t.c] || 0) + t.a;
+                        totalIncome += t.a;
+                    }
+                });
+            }
+
+            // Месяц
+            document.getElementById('reports-month').innerText = D.m || 'Текущий месяц';
+
+            // Expense chart
+            renderDoughnutChart('expense-chart', expenseByCategory, totalExpense, 'expense-legend', 'expense-total', true);
+
+            // Income chart
+            renderDoughnutChart('income-chart', incomeByCategory, totalIncome, 'income-legend', 'income-total', false);
+
+            // Баланс
+            document.getElementById('report-income').innerText = '+' + fmt(totalIncome);
+            document.getElementById('report-expense').innerText = '-' + fmt(totalExpense);
+            const balance = totalIncome - totalExpense;
+            const balEl = document.getElementById('report-balance');
+            balEl.innerText = (balance >= 0 ? '+' : '') + fmt(balance);
+            balEl.style.color = balance >= 0 ? 'var(--income)' : 'var(--expense)';
+        }
+
+        function renderDoughnutChart(canvasId, dataObj, total, legendId, totalId, isExpense) {
+            const canvas = document.getElementById(canvasId);
+            const legendContainer = document.getElementById(legendId);
+            const totalContainer = document.getElementById(totalId);
+
+            // Уничтожить предыдущий chart если есть
+            if (isExpense && expenseChartInstance) {
+                expenseChartInstance.destroy();
+            } else if (!isExpense && incomeChartInstance) {
+                incomeChartInstance.destroy();
+            }
+
+            const labels = Object.keys(dataObj);
+            const values = Object.values(dataObj);
+
+            if (labels.length === 0) {
+                legendContainer.innerHTML = '<div style="text-align:center; color:var(--text-secondary); padding:20px;">Нет данных</div>';
+                totalContainer.querySelector('div:last-child').innerText = '0 ₽';
+                return;
+            }
+
+            // Total в центре
+            totalContainer.querySelector('div:last-child').innerText = fmt(total);
+
+            // Рендерим chart с процентами
+            const chartInstance = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: chartColors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: 'var(--card-bg)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.raw;
+                                    const percent = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ${value.toLocaleString()} ₽ (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (isExpense) {
+                expenseChartInstance = chartInstance;
+            } else {
+                incomeChartInstance = chartInstance;
+            }
+
+            // Легенда - список категорий
+            legendContainer.innerHTML = '';
+            labels.forEach((label, idx) => {
+                const value = values[idx];
+                const percent = ((value / total) * 100).toFixed(1);
+                const color = chartColors[idx % chartColors.length];
+
+                const item = document.createElement('div');
+                item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);';
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:12px; height:12px; border-radius:50%; background:${color};"></div>
+                        <span style="font-size:14px;">${label}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:14px; font-weight:600;">${value.toLocaleString()} ₽</div>
+                        <div style="font-size:12px; color:var(--text-secondary);">${percent}%</div>
+                    </div>
+                `;
+                legendContainer.appendChild(item);
+            });
         }
 
         // Инициализация списка категорий при загрузке
