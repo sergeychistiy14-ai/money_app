@@ -633,8 +633,8 @@
             return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
-        // API URL для сервера
-        const API_URL = 'https://fingoal.ru/api/action';
+        // API URL для сервера (через Cloudflare Tunnel)
+        const API_URL = 'https://defined-partner-edt-footwear.trycloudflare.com/api/action';
 
         // Функция отправки данных через HTTP API (работает и через MenuButton!)
         async function send(action, payload) {
