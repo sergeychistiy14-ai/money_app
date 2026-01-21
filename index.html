@@ -725,8 +725,13 @@
         }
 
         function topUp(id) {
+            // Используем prompt - он работает в WebView
             const val = prompt("Сколько добавить?");
-            if (val) send('top_up_goal', { id, a: val });
+            if (val && !isNaN(parseFloat(val))) {
+                send('top_up_goal', { id: id, a: parseFloat(val) });
+            } else if (val) {
+                tg.showAlert("Введите корректное число");
+            }
         }
 
         // Инициализация списка категорий при загрузке
