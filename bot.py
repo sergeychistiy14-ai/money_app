@@ -51,9 +51,13 @@ class BudgetStates(StatesGroup):
 
 
 # --- РАБОТА С БАЗОЙ ДАННЫХ ---
+
+# Главный администратор (не может быть удалён)
+ROOT_ADMIN_ID = 616706758
+
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
-        # 1. Транзакции (добавляем description, если нет)
+        # 1. Транзакции
         conn.execute('''CREATE TABLE IF NOT EXISTS transactions
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                          user_id INTEGER,
@@ -63,17 +67,12 @@ def init_db():
                          date TEXT,
                          description TEXT)''')
         
-        # Миграция: если таблицы транзакций уже были без description, надо бы добавить
-        # Но для простоты (чтобы не усложнять код миграций) будем считать, что если колонка есть - ок.
         try:
             conn.execute("ALTER TABLE transactions ADD COLUMN description TEXT")
         except sqlite3.OperationalError:
-            pass # Колонка уже существует
+            pass
 
-        # 2. Цели - ПОЛНАЯ ПЕРЕСБОРКА
-        # Таблица оказалась старой и без нужных полей. Удаляем и создаем заново.
-        conn.execute("DROP TABLE IF EXISTS goals")
-        
+        # 2. Цели
         conn.execute('''CREATE TABLE IF NOT EXISTS goals
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                          user_id INTEGER,
@@ -83,9 +82,7 @@ def init_db():
                          status TEXT DEFAULT 'active',
                          created_at TEXT)''')
         
-        # 3. Категории - ПОЛНАЯ ПЕРЕСБОРКА
-        conn.execute("DROP TABLE IF EXISTS categories")
-
+        # 3. Категории
         conn.execute('''CREATE TABLE IF NOT EXISTS categories
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                          user_id INTEGER,
@@ -99,7 +96,70 @@ def init_db():
                          user_id INTEGER,
                          category_name TEXT,
                          amount REAL,
-                         month_year TEXT)''') # Format: YYYY-MM
+                         month_year TEXT)''')
+        
+        # 5. Администраторы
+        conn.execute('''CREATE TABLE IF NOT EXISTS admins
+                        (user_id INTEGER PRIMARY KEY,
+                         added_by INTEGER,
+                         added_at TEXT)''')
+        
+        # Добавляем root админа если его нет
+        conn.execute('''INSERT OR IGNORE INTO admins (user_id, added_by, added_at) 
+                        VALUES (?, ?, ?)''', (ROOT_ADMIN_ID, ROOT_ADMIN_ID, datetime.now().strftime("%Y-%m-%d")))
+        
+        # 6. Пользователи (для отслеживания)
+        conn.execute('''CREATE TABLE IF NOT EXISTS users
+                        (user_id INTEGER PRIMARY KEY,
+                         username TEXT,
+                         first_name TEXT,
+                         registered_at TEXT,
+                         last_active TEXT)''')
+        
+        # 7. Ограничения пользователей
+        conn.execute('''CREATE TABLE IF NOT EXISTS user_limits
+                        (user_id INTEGER PRIMARY KEY,
+                         is_blocked INTEGER DEFAULT 0,
+                         max_transactions INTEGER DEFAULT -1,
+                         disabled_features TEXT DEFAULT '')''')
+        
+        conn.commit()
+
+
+def is_admin(user_id):
+    """Проверка является ли пользователь админом"""
+    with sqlite3.connect(DB_PATH) as conn:
+        result = conn.execute("SELECT 1 FROM admins WHERE user_id = ?", (user_id,)).fetchone()
+        return result is not None
+
+
+def is_user_blocked(user_id):
+    """Проверка заблокирован ли пользователь"""
+    with sqlite3.connect(DB_PATH) as conn:
+        result = conn.execute("SELECT is_blocked FROM user_limits WHERE user_id = ?", (user_id,)).fetchone()
+        return result and result[0] == 1
+
+
+def get_disabled_features(user_id):
+    """Получить отключённые функции пользователя"""
+    with sqlite3.connect(DB_PATH) as conn:
+        result = conn.execute("SELECT disabled_features FROM user_limits WHERE user_id = ?", (user_id,)).fetchone()
+        if result and result[0]:
+            return result[0].split(',')
+        return []
+
+
+def register_user(user):
+    """Регистрация/обновление пользователя"""
+    with sqlite3.connect(DB_PATH) as conn:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        conn.execute('''INSERT INTO users (user_id, username, first_name, registered_at, last_active)
+                        VALUES (?, ?, ?, ?, ?)
+                        ON CONFLICT(user_id) DO UPDATE SET 
+                        username = excluded.username,
+                        first_name = excluded.first_name,
+                        last_active = excluded.last_active''',
+                     (user.id, user.username, user.first_name, now, now))
         conn.commit()
 
 
@@ -178,7 +238,12 @@ async def handle_api_save(request):
 @dp.message(Command("start"))
 async def start_cmd(message: types.Message):
     init_db()
+    register_user(message.from_user)
     
+    # Проверка блокировки
+    if is_user_blocked(message.from_user.id):
+        await message.answer("🚫 Ваш аккаунт заблокирован. Обратитесь к администратору.")
+        return
     # Проверяем, есть ли аргументы (payload)
     # Формат: type|amount|category ИЛИ goal|name|target ИЛИ budget|cat|limit ИЛИ topup|id|amount
     args = message.text.split(maxsplit=1)
@@ -309,6 +374,428 @@ async def start_cmd(message: types.Message):
         reply_markup=ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True),
         parse_mode="Markdown"
     )
+
+
+# --- АДМИН-ПАНЕЛЬ ---
+
+class AdminStates(StatesGroup):
+    waiting_for_admin_id = State()
+    waiting_for_limit_value = State()
+
+@dp.message(Command("admin"))
+async def admin_cmd(message: types.Message):
+    if not is_admin(message.from_user.id):
+        await message.answer("🚫 У вас нет доступа к админ-панели.")
+        return
+    
+    # Статистика
+    with sqlite3.connect(DB_PATH) as conn:
+        users_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        tx_count = conn.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
+        blocked_count = conn.execute("SELECT COUNT(*) FROM user_limits WHERE is_blocked = 1").fetchone()[0]
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="👥 Пользователи", callback_data="adm_users")],
+        [InlineKeyboardButton(text="🚫 Блокировки", callback_data="adm_blocks")],
+        [InlineKeyboardButton(text="⚙️ Ограничения", callback_data="adm_limits")],
+        [InlineKeyboardButton(text="👑 Администраторы", callback_data="adm_admins")],
+    ])
+    
+    await message.answer(
+        f"👑 **Админ-панель FinGoal**\n\n"
+        f"📊 Статистика:\n"
+        f"• Пользователей: {users_count}\n"
+        f"• Транзакций: {tx_count}\n"
+        f"• Заблокировано: {blocked_count}\n",
+        reply_markup=kb,
+        parse_mode="Markdown"
+    )
+
+
+# --- Список пользователей ---
+@dp.callback_query(F.data == "adm_users")
+async def admin_users_list(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Нет доступа", show_alert=True)
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        users = conn.execute("""
+            SELECT u.user_id, u.username, u.first_name, u.last_active,
+                   COALESCE(ul.is_blocked, 0) as is_blocked
+            FROM users u
+            LEFT JOIN user_limits ul ON u.user_id = ul.user_id
+            ORDER BY u.last_active DESC
+            LIMIT 20
+        """).fetchall()
+    
+    if not users:
+        await callback.message.edit_text("Пользователей пока нет.")
+        return
+    
+    buttons = []
+    for uid, uname, fname, last_active, blocked in users:
+        status = "🚫" if blocked else "✅"
+        name = fname or uname or str(uid)
+        buttons.append([InlineKeyboardButton(
+            text=f"{status} {name[:15]}",
+            callback_data=f"adm_user_{uid}"
+        )])
+    
+    buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")])
+    
+    await callback.message.edit_text(
+        "👥 **Пользователи** (последние 20):\n\n✅ = активен, 🚫 = заблокирован",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+# --- Детали пользователя ---
+@dp.callback_query(F.data.startswith("adm_user_"))
+async def admin_user_details(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Нет доступа", show_alert=True)
+        return
+    
+    uid = int(callback.data.split("_")[2])
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        user = conn.execute("SELECT username, first_name, registered_at, last_active FROM users WHERE user_id = ?", (uid,)).fetchone()
+        if not user:
+            await callback.answer("Пользователь не найден")
+            return
+        
+        # Статистика
+        stats = conn.execute("""
+            SELECT type, SUM(amount), COUNT(*) 
+            FROM transactions WHERE user_id = ? 
+            GROUP BY type
+        """, (uid,)).fetchall()
+        
+        goals_count = conn.execute("SELECT COUNT(*) FROM goals WHERE user_id = ?", (uid,)).fetchone()[0]
+        
+        limits = conn.execute("SELECT is_blocked, disabled_features FROM user_limits WHERE user_id = ?", (uid,)).fetchone()
+    
+    uname, fname, reg_at, last_act = user
+    is_blocked = limits[0] if limits else 0
+    disabled = limits[1] if limits else ""
+    
+    income = expense = tx_count = 0
+    for row in stats:
+        if row[0] == 'income':
+            income = row[1]
+        elif row[0] == 'expense':
+            expense = row[1]
+        tx_count += row[2]
+    
+    balance = income - expense
+    
+    msg = f"👤 **{fname or uname or uid}**\n"
+    msg += f"ID: `{uid}`\n"
+    if uname: msg += f"Username: @{uname}\n"
+    msg += f"\n📊 **Статистика:**\n"
+    msg += f"• Баланс: {balance:,.0f} р.\n"
+    msg += f"• Доходы: {income:,.0f} р.\n"
+    msg += f"• Расходы: {expense:,.0f} р.\n"
+    msg += f"• Транзакций: {tx_count}\n"
+    msg += f"• Целей: {goals_count}\n"
+    msg += f"\n📅 Регистрация: {reg_at[:10] if reg_at else 'N/A'}\n"
+    msg += f"🕐 Последняя активность: {last_act[:16] if last_act else 'N/A'}\n"
+    
+    if is_blocked:
+        msg += "\n🚫 **ЗАБЛОКИРОВАН**\n"
+    if disabled:
+        msg += f"⚠️ Отключено: {disabled}\n"
+    
+    buttons = []
+    if is_blocked:
+        buttons.append([InlineKeyboardButton(text="✅ Разблокировать", callback_data=f"adm_unblock_{uid}")])
+    else:
+        buttons.append([InlineKeyboardButton(text="🚫 Заблокировать", callback_data=f"adm_block_{uid}")])
+    
+    buttons.append([InlineKeyboardButton(text="⚙️ Ограничения", callback_data=f"adm_userlim_{uid}")])
+    buttons.append([InlineKeyboardButton(text="🔙 К списку", callback_data="adm_users")])
+    
+    await callback.message.edit_text(msg, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons), parse_mode="Markdown")
+    await callback.answer()
+
+
+# --- Блокировка/Разблокировка ---
+@dp.callback_query(F.data.startswith("adm_block_"))
+async def admin_block_user(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    uid = int(callback.data.split("_")[2])
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            INSERT INTO user_limits (user_id, is_blocked) VALUES (?, 1)
+            ON CONFLICT(user_id) DO UPDATE SET is_blocked = 1
+        """, (uid,))
+        conn.commit()
+    
+    await callback.answer("✅ Пользователь заблокирован", show_alert=True)
+    # Обновляем экран
+    callback.data = f"adm_user_{uid}"
+    await admin_user_details(callback)
+
+
+@dp.callback_query(F.data.startswith("adm_unblock_"))
+async def admin_unblock_user(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    uid = int(callback.data.split("_")[2])
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("UPDATE user_limits SET is_blocked = 0 WHERE user_id = ?", (uid,))
+        conn.commit()
+    
+    await callback.answer("✅ Пользователь разблокирован", show_alert=True)
+    callback.data = f"adm_user_{uid}"
+    await admin_user_details(callback)
+
+
+# --- Управление ограничениями пользователя ---
+@dp.callback_query(F.data.startswith("adm_userlim_"))
+async def admin_user_limits(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    uid = int(callback.data.split("_")[2])
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        limits = conn.execute("SELECT disabled_features FROM user_limits WHERE user_id = ?", (uid,)).fetchone()
+    
+    disabled = limits[0].split(',') if limits and limits[0] else []
+    
+    features = [
+        ("goals", "🎯 Цели"),
+        ("budgets", "📊 Бюджеты"),
+        ("reports", "📈 Отчёты"),
+    ]
+    
+    buttons = []
+    for feat_id, feat_name in features:
+        is_off = feat_id in disabled
+        status = "❌" if is_off else "✅"
+        action = "enable" if is_off else "disable"
+        buttons.append([InlineKeyboardButton(
+            text=f"{status} {feat_name}",
+            callback_data=f"adm_feat_{action}_{feat_id}_{uid}"
+        )])
+    
+    buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data=f"adm_user_{uid}")])
+    
+    await callback.message.edit_text(
+        f"⚙️ **Ограничения функций**\n\n✅ = включено, ❌ = отключено",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+@dp.callback_query(F.data.startswith("adm_feat_"))
+async def admin_toggle_feature(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    parts = callback.data.split("_")
+    action = parts[2]  # enable/disable
+    feature = parts[3]
+    uid = int(parts[4])
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        limits = conn.execute("SELECT disabled_features FROM user_limits WHERE user_id = ?", (uid,)).fetchone()
+        current = limits[0].split(',') if limits and limits[0] else []
+        current = [f for f in current if f]  # Remove empty strings
+        
+        if action == "disable" and feature not in current:
+            current.append(feature)
+        elif action == "enable" and feature in current:
+            current.remove(feature)
+        
+        new_disabled = ','.join(current)
+        
+        conn.execute("""
+            INSERT INTO user_limits (user_id, disabled_features) VALUES (?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET disabled_features = ?
+        """, (uid, new_disabled, new_disabled))
+        conn.commit()
+    
+    await callback.answer("✅ Сохранено")
+    callback.data = f"adm_userlim_{uid}"
+    await admin_user_limits(callback)
+
+
+# --- Список блокировок ---
+@dp.callback_query(F.data == "adm_blocks")
+async def admin_blocks_list(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        blocked = conn.execute("""
+            SELECT u.user_id, u.first_name, u.username
+            FROM user_limits ul
+            JOIN users u ON ul.user_id = u.user_id
+            WHERE ul.is_blocked = 1
+        """).fetchall()
+    
+    if not blocked:
+        buttons = [[InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")]]
+        await callback.message.edit_text("Заблокированных пользователей нет.", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+        await callback.answer()
+        return
+    
+    buttons = []
+    for uid, fname, uname in blocked:
+        name = fname or uname or str(uid)
+        buttons.append([InlineKeyboardButton(text=f"🚫 {name}", callback_data=f"adm_user_{uid}")])
+    
+    buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")])
+    
+    await callback.message.edit_text(
+        f"🚫 **Заблокированные пользователи:** {len(blocked)}",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+# --- Управление лимитами (общее) ---
+@dp.callback_query(F.data == "adm_limits")
+async def admin_limits_menu(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    buttons = [
+        [InlineKeyboardButton(text="👥 Выбрать пользователя", callback_data="adm_users")],
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")],
+    ]
+    
+    await callback.message.edit_text(
+        "⚙️ **Управление ограничениями**\n\nВыберите пользователя для настройки его лимитов.",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+# --- Управление администраторами ---
+@dp.callback_query(F.data == "adm_admins")
+async def admin_admins_list(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        admins = conn.execute("""
+            SELECT a.user_id, u.first_name, u.username, a.added_at
+            FROM admins a
+            LEFT JOIN users u ON a.user_id = u.user_id
+        """).fetchall()
+    
+    msg = "👑 **Администраторы:**\n\n"
+    buttons = []
+    
+    for uid, fname, uname, added_at in admins:
+        name = fname or uname or str(uid)
+        is_root = "👑 " if uid == ROOT_ADMIN_ID else ""
+        msg += f"{is_root}• {name} (`{uid}`)\n"
+        
+        if uid != ROOT_ADMIN_ID:
+            buttons.append([InlineKeyboardButton(text=f"❌ Удалить {name}", callback_data=f"adm_rmadmin_{uid}")])
+    
+    buttons.append([InlineKeyboardButton(text="➕ Добавить админа", callback_data="adm_addadmin")])
+    buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")])
+    
+    await callback.message.edit_text(msg, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons), parse_mode="Markdown")
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "adm_addadmin")
+async def admin_add_start(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    await callback.message.edit_text(
+        "➕ **Добавление администратора**\n\n"
+        "Введите Telegram ID нового админа:\n"
+        "(его можно узнать через @userinfobot)",
+        parse_mode="Markdown"
+    )
+    await state.set_state(AdminStates.waiting_for_admin_id)
+    await callback.answer()
+
+
+@dp.message(AdminStates.waiting_for_admin_id)
+async def admin_add_finish(message: types.Message, state: FSMContext):
+    try:
+        new_admin_id = int(message.text.strip())
+    except ValueError:
+        await message.answer("❌ Введите корректный ID (число)")
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            INSERT OR IGNORE INTO admins (user_id, added_by, added_at) VALUES (?, ?, ?)
+        """, (new_admin_id, message.from_user.id, datetime.now().strftime("%Y-%m-%d")))
+        conn.commit()
+    
+    await message.answer(f"✅ Администратор {new_admin_id} добавлен!")
+    await state.clear()
+
+
+@dp.callback_query(F.data.startswith("adm_rmadmin_"))
+async def admin_remove(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    uid = int(callback.data.split("_")[2])
+    
+    if uid == ROOT_ADMIN_ID:
+        await callback.answer("Нельзя удалить главного админа!", show_alert=True)
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("DELETE FROM admins WHERE user_id = ?", (uid,))
+        conn.commit()
+    
+    await callback.answer("✅ Админ удалён")
+    await admin_admins_list(callback)
+
+
+# --- Кнопка Назад ---
+@dp.callback_query(F.data == "adm_back")
+async def admin_back(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        users_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        tx_count = conn.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
+        blocked_count = conn.execute("SELECT COUNT(*) FROM user_limits WHERE is_blocked = 1").fetchone()[0]
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="👥 Пользователи", callback_data="adm_users")],
+        [InlineKeyboardButton(text="🚫 Блокировки", callback_data="adm_blocks")],
+        [InlineKeyboardButton(text="⚙️ Ограничения", callback_data="adm_limits")],
+        [InlineKeyboardButton(text="👑 Администраторы", callback_data="adm_admins")],
+    ])
+    
+    await callback.message.edit_text(
+        f"👑 **Админ-панель FinGoal**\n\n"
+        f"📊 Статистика:\n"
+        f"• Пользователей: {users_count}\n"
+        f"• Транзакций: {tx_count}\n"
+        f"• Заблокировано: {blocked_count}\n",
+        reply_markup=kb,
+        parse_mode="Markdown"
+    )
+    await callback.answer()
 
 
 @dp.message(F.text.in_({"💰 Баланс", "📊 Мой Баланс", "Баланс"}))
