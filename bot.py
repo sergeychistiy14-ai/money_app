@@ -1647,20 +1647,36 @@ FUNNY_INCOME_RESPONSES = [
 ]
 
 async def process_transaction_request(message: types.Message, state: FSMContext, amount, category_input, t_type, desc):
-    # 1. Получаем список существующих категорий пользователя
+    # 1. Получаем список существующих категорий пользователя (из таблицы categories + из транзакций)
     with sqlite3.connect(DB_PATH) as conn:
         cats_db = conn.execute("SELECT name FROM categories WHERE user_id = ? AND type = ?", 
                                (message.from_user.id, t_type)).fetchall()
+        cats_tx = conn.execute("SELECT DISTINCT category FROM transactions WHERE user_id = ? AND type = ?",
+                               (message.from_user.id, t_type)).fetchall()
     
-    existing_names = [c[0] for c in cats_db]
+    # Объединяем, убираем дубли (с учетом регистра)
+    existing_names_raw = list(set([c[0] for c in cats_db] + [c[0] for c in cats_tx]))
     
-    # 2. Нечеткий поиск (Fuzzy match)
-    # cutoff=0.7 позволяет простить 1-2 ошибки в обычном слове
-    matches = difflib.get_close_matches(category_input, existing_names, n=1, cutoff=0.6)
+    # 2. Нечеткий поиск (Fuzzy match) - с нормализацией регистра
+    category_input_lower = category_input.lower().strip()
     
-    if matches:
+    # Создаём маппинг lower -> original для точного совпадения
+    name_map = {name.lower(): name for name in existing_names_raw}
+    existing_names_lower = list(name_map.keys())
+    
+    # Точное совпадение (без учёта регистра)
+    if category_input_lower in name_map:
+        matched_category = name_map[category_input_lower]
+    else:
+        # Нечеткий поиск с cutoff=0.5 (позволяет 1-2 ошибки)
+        matches = difflib.get_close_matches(category_input_lower, existing_names_lower, n=1, cutoff=0.5)
+        if matches:
+            matched_category = name_map[matches[0]]  # Получаем оригинальное имя с правильным регистром
+        else:
+            matched_category = None
+    
+    if matched_category:
         # Нашли совпадение! Используем существующую категорию
-        matched_category = matches[0]
         save_transaction(message.from_user.id, amount, matched_category, t_type, desc)
         
         icon = "📉" if t_type == 'expense' else "📈"
