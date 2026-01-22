@@ -1307,22 +1307,10 @@ async def budget_list_view(callback: types.CallbackQuery):
 
 @dp.message(F.text == "📈 Отчеты")
 async def reports_menu(message: types.Message):
-    # Открываем MiniApp с данными и указанием открыть вкладку reports
-    payload = await get_miniapp_data(message.from_user.id, limit=50)  # Больше транзакций для отчёта
-    payload['tab'] = 'reports'  # Указываем какую вкладку открыть
-    json_str = json.dumps(payload)
-    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
-    url = f"{WEB_APP_URL}?data={b64_data}"
-    
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📊 Открыть отчёт", web_app=WebAppInfo(url=url))]
-    ])
-    
-    await message.answer(
-        "📊 **Отчёты**\n\nНажмите кнопку ниже чтобы открыть детальный отчёт с диаграммами:",
-        reply_markup=kb,
-        parse_mode="Markdown"
-    )
+    # По умолчанию текущий месяц
+    now = datetime.now()
+    text, markup = await generate_report_response(message.from_user.id, now.year, now.month)
+    await message.answer(text, reply_markup=markup, parse_mode="Markdown")
 
 @dp.callback_query(F.data.startswith("report_nav_"))
 async def report_navigate(callback: types.CallbackQuery):
@@ -1417,12 +1405,27 @@ async def generate_report_response(user_id, year, month):
              percent = (curr / target * 100) if target > 0 else 0
              msg += f"- {name}: {curr:,.0f} / {target:,.0f} ({percent:.0f}%)\n"
 
-    # JSON for WebApp
+    # JSON for WebApp - передаём полные данные транзакций для выбранного месяца
+    # Получаем транзакции за выбранный месяц
+    with sqlite3.connect(DB_PATH) as conn:
+        tx_rows = conn.execute("""
+            SELECT id, amount, category, type, date, COALESCE(description, '') 
+            FROM transactions 
+            WHERE user_id = ? AND date >= ? AND date < ?
+            ORDER BY id DESC
+        """, (user_id, start_date, next_start)).fetchall()
+        
+        tx = [{"i": r[0], "a": int(r[1]), "c": r[2], "t": (1 if r[3] == "expense" else 0), "d": r[4][5:16], "ds": r[5]} for r in tx_rows]
+    
     report_data = {
-        'income': total_income,
-        'expense': total_expense,
-        'categories': {c[0]: c[1] for c in cats_all},
-        'month': month_name
+        'uid': user_id,
+        'tx': tx,
+        'g': [],  # Цели не нужны для отчёта
+        'b': [],  # Бюджеты не нужны для отчёта
+        'c': {"expense": [], "income": []},
+        's': {'i': int(total_income), 'e': int(total_expense)},
+        'm': month_name,
+        'tab': 'reports'  # Автопереход на вкладку отчётов
     }
     json_str = json.dumps(report_data)
     b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
