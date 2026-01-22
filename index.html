@@ -562,6 +562,11 @@
                     isReportMode = true;
                 }
                 render();
+
+                // Автопереход на вкладку указанную в данных
+                if (D.tab && D.tab === 'reports') {
+                    setTimeout(() => nav('reports'), 100);
+                }
             } catch (e) { console.error(e); tg.showAlert("Error parsing data"); }
         }
 

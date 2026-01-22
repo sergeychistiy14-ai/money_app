@@ -1307,10 +1307,22 @@ async def budget_list_view(callback: types.CallbackQuery):
 
 @dp.message(F.text == "📈 Отчеты")
 async def reports_menu(message: types.Message):
-    # По умолчанию текущий месяц
-    now = datetime.now()
-    text, markup = await generate_report_response(message.from_user.id, now.year, now.month)
-    await message.answer(text, reply_markup=markup, parse_mode="Markdown")
+    # Открываем MiniApp с данными и указанием открыть вкладку reports
+    payload = await get_miniapp_data(message.from_user.id, limit=50)  # Больше транзакций для отчёта
+    payload['tab'] = 'reports'  # Указываем какую вкладку открыть
+    json_str = json.dumps(payload)
+    b64_data = base64.urlsafe_b64encode(json_str.encode()).decode()
+    url = f"{WEB_APP_URL}?data={b64_data}"
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📊 Открыть отчёт", web_app=WebAppInfo(url=url))]
+    ])
+    
+    await message.answer(
+        "📊 **Отчёты**\n\nНажмите кнопку ниже чтобы открыть детальный отчёт с диаграммами:",
+        reply_markup=kb,
+        parse_mode="Markdown"
+    )
 
 @dp.callback_query(F.data.startswith("report_nav_"))
 async def report_navigate(callback: types.CallbackQuery):
