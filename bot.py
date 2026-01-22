@@ -473,44 +473,133 @@ async def admin_cmd(message: types.Message):
     )
 
 
-# --- Список пользователей ---
-@dp.callback_query(F.data == "adm_users")
+# --- Список пользователей с пагинацией ---
+@dp.callback_query(F.data.startswith("adm_users"))
 async def admin_users_list(callback: types.CallbackQuery):
     if not is_admin(callback.from_user.id):
         await callback.answer("Нет доступа", show_alert=True)
         return
     
+    # Парсим страницу: adm_users или adm_users_page_2
+    parts = callback.data.split("_")
+    page = 1
+    if len(parts) >= 4 and parts[2] == "page":
+        page = int(parts[3])
+    
+    per_page = 10
+    offset = (page - 1) * per_page
+    
     with sqlite3.connect(DB_PATH) as conn:
+        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
         users = conn.execute("""
             SELECT u.user_id, u.username, u.first_name, u.last_active,
                    COALESCE(ul.is_blocked, 0) as is_blocked
             FROM users u
             LEFT JOIN user_limits ul ON u.user_id = ul.user_id
             ORDER BY u.last_active DESC
-            LIMIT 20
-        """).fetchall()
+            LIMIT ? OFFSET ?
+        """, (per_page, offset)).fetchall()
     
-    if not users:
+    if not users and page == 1:
         await callback.message.edit_text("Пользователей пока нет.")
         return
+    
+    total_pages = (total_users + per_page - 1) // per_page
     
     buttons = []
     for uid, uname, fname, last_active, blocked in users:
         status = "🚫" if blocked else "✅"
         name = fname or uname or str(uid)
         buttons.append([InlineKeyboardButton(
-            text=f"{status} {name[:15]}",
+            text=f"{status} {name[:20]}",
             callback_data=f"adm_user_{uid}"
         )])
     
+    # Навигация
+    nav_row = []
+    if page > 1:
+        nav_row.append(InlineKeyboardButton(text="⬅️", callback_data=f"adm_users_page_{page-1}"))
+    nav_row.append(InlineKeyboardButton(text=f"📄 {page}/{total_pages}", callback_data="ignore"))
+    if page < total_pages:
+        nav_row.append(InlineKeyboardButton(text="➡️", callback_data=f"adm_users_page_{page+1}"))
+    buttons.append(nav_row)
+    
+    # Действия
+    buttons.append([InlineKeyboardButton(text="🔍 Поиск по username", callback_data="adm_search_user")])
     buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data="adm_back")])
     
     await callback.message.edit_text(
-        "👥 **Пользователи** (последние 20):\n\n✅ = активен, 🚫 = заблокирован",
+        f"👥 **Пользователи** ({total_users} всего)\n\n"
+        f"Страница {page} из {total_pages}\n"
+        f"✅ = активен, 🚫 = заблокирован",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons),
         parse_mode="Markdown"
     )
     await callback.answer()
+
+
+# --- Поиск пользователя по username ---
+@dp.callback_query(F.data == "adm_search_user")
+async def admin_search_prompt(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    await state.set_state("admin_search_user")
+    await callback.message.edit_text(
+        "🔍 **Поиск пользователя**\n\n"
+        "Введите username (без @) или часть имени:",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="❌ Отмена", callback_data="adm_users")]
+        ]),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+@dp.message(StateFilter("admin_search_user"))
+async def admin_search_handler(message: types.Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    
+    query = message.text.strip().lower().replace("@", "")
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        users = conn.execute("""
+            SELECT u.user_id, u.username, u.first_name,
+                   COALESCE(ul.is_blocked, 0) as is_blocked
+            FROM users u
+            LEFT JOIN user_limits ul ON u.user_id = ul.user_id
+            WHERE LOWER(u.username) LIKE ? OR LOWER(u.first_name) LIKE ?
+            ORDER BY u.last_active DESC
+            LIMIT 20
+        """, (f"%{query}%", f"%{query}%")).fetchall()
+    
+    await state.clear()
+    
+    if not users:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔍 Искать ещё", callback_data="adm_search_user")],
+            [InlineKeyboardButton(text="🔙 К списку", callback_data="adm_users")]
+        ])
+        await message.answer(f"❌ Пользователи по запросу \"{query}\" не найдены.", reply_markup=kb)
+        return
+    
+    buttons = []
+    for uid, uname, fname, blocked in users:
+        status = "🚫" if blocked else "✅"
+        name = fname or uname or str(uid)
+        buttons.append([InlineKeyboardButton(
+            text=f"{status} {name[:20]} (@{uname or 'N/A'})",
+            callback_data=f"adm_user_{uid}"
+        )])
+    
+    buttons.append([InlineKeyboardButton(text="🔍 Искать ещё", callback_data="adm_search_user")])
+    buttons.append([InlineKeyboardButton(text="🔙 К списку", callback_data="adm_users")])
+    
+    await message.answer(
+        f"🔍 Результаты поиска \"{query}\" ({len(users)}):",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+    )
 
 
 # --- Детали пользователя ---
@@ -571,6 +660,7 @@ async def admin_user_details(callback: types.CallbackQuery):
         msg += f"⚠️ Отключено: {disabled}\n"
     
     buttons = []
+    buttons.append([InlineKeyboardButton(text="📋 Транзакции", callback_data=f"adm_tx_{uid}_1")])
     if is_blocked:
         buttons.append([InlineKeyboardButton(text="✅ Разблокировать", callback_data=f"adm_unblock_{uid}")])
     else:
@@ -618,6 +708,64 @@ async def admin_unblock_user(callback: types.CallbackQuery):
     await callback.answer("✅ Пользователь разблокирован", show_alert=True)
     callback.data = f"adm_user_{uid}"
     await admin_user_details(callback)
+
+
+# --- Просмотр транзакций пользователя ---
+@dp.callback_query(F.data.startswith("adm_tx_"))
+async def admin_view_user_transactions(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    
+    # adm_tx_123456_1 (uid_page)
+    parts = callback.data.split("_")
+    uid = int(parts[2])
+    page = int(parts[3]) if len(parts) > 3 else 1
+    
+    per_page = 15
+    offset = (page - 1) * per_page
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        user = conn.execute("SELECT first_name, username FROM users WHERE user_id = ?", (uid,)).fetchone()
+        total_tx = conn.execute("SELECT COUNT(*) FROM transactions WHERE user_id = ?", (uid,)).fetchone()[0]
+        txs = conn.execute("""
+            SELECT amount, category, type, date, COALESCE(description, '')
+            FROM transactions WHERE user_id = ?
+            ORDER BY id DESC
+            LIMIT ? OFFSET ?
+        """, (uid, per_page, offset)).fetchall()
+    
+    user_name = user[0] or user[1] or str(uid) if user else str(uid)
+    total_pages = max(1, (total_tx + per_page - 1) // per_page)
+    
+    if not txs:
+        msg = f"📋 **Транзакции {user_name}**\n\nНет транзакций."
+    else:
+        msg = f"📋 **Транзакции {user_name}**\n"
+        msg += f"Страница {page}/{total_pages} (всего: {total_tx})\n\n"
+        
+        for amount, cat, t_type, date, desc in txs:
+            icon = "📉" if t_type == "expense" else "📈"
+            sign = "-" if t_type == "expense" else "+"
+            date_short = date[5:10] if date else ""
+            msg += f"{icon} {sign}{amount:,.0f} | {cat[:12]}"
+            if desc:
+                msg += f" | {desc[:15]}"
+            msg += f" | {date_short}\n"
+    
+    buttons = []
+    nav_row = []
+    if page > 1:
+        nav_row.append(InlineKeyboardButton(text="⬅️", callback_data=f"adm_tx_{uid}_{page-1}"))
+    nav_row.append(InlineKeyboardButton(text=f"📄 {page}/{total_pages}", callback_data="ignore"))
+    if page < total_pages:
+        nav_row.append(InlineKeyboardButton(text="➡️", callback_data=f"adm_tx_{uid}_{page+1}"))
+    if nav_row:
+        buttons.append(nav_row)
+    
+    buttons.append([InlineKeyboardButton(text="🔙 К профилю", callback_data=f"adm_user_{uid}")])
+    
+    await callback.message.edit_text(msg, reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons), parse_mode="Markdown")
+    await callback.answer()
 
 
 # --- Управление ограничениями пользователя ---
