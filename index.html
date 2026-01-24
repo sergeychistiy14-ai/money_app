@@ -850,34 +850,38 @@
         const chartColors = ['#007AFF', '#FF9500', '#FF2D55', '#AF52DE', '#5856D6', '#FFCC00', '#5AC8FA', '#4CD964', '#FF6384', '#36A2EB'];
 
         function renderReports() {
-            // Группируем транзакции по категориям
+            // Группируем транзакции по категориям (для диаграмм)
             const expenseByCategory = {};
             const incomeByCategory = {};
-            let totalExpense = 0;
-            let totalIncome = 0;
+            let chartExpense = 0;
+            let chartIncome = 0;
 
             if (D.tx) {
                 D.tx.forEach(t => {
                     if (t.t === 1) { // expense
                         expenseByCategory[t.c] = (expenseByCategory[t.c] || 0) + t.a;
-                        totalExpense += t.a;
+                        chartExpense += t.a;
                     } else { // income
                         incomeByCategory[t.c] = (incomeByCategory[t.c] || 0) + t.a;
-                        totalIncome += t.a;
+                        chartIncome += t.a;
                     }
                 });
             }
 
+            // Используем правильные итоги за месяц из D.s (приходят с сервера)
+            const totalIncome = D.s ? D.s.i : chartIncome;
+            const totalExpense = D.s ? D.s.e : chartExpense;
+
             // Месяц
             document.getElementById('reports-month').innerText = D.m || 'Текущий месяц';
 
-            // Expense chart
-            renderDoughnutChart('expense-chart', expenseByCategory, totalExpense, 'expense-legend', 'expense-total', true);
+            // Expense chart (использует данные из D.tx для детализации)
+            renderDoughnutChart('expense-chart', expenseByCategory, chartExpense, 'expense-legend', 'expense-total', true);
 
             // Income chart
-            renderDoughnutChart('income-chart', incomeByCategory, totalIncome, 'income-legend', 'income-total', false);
+            renderDoughnutChart('income-chart', incomeByCategory, chartIncome, 'income-legend', 'income-total', false);
 
-            // Баланс
+            // Баланс - используем правильные итоги за весь месяц
             document.getElementById('report-income').innerText = '+' + fmt(totalIncome);
             document.getElementById('report-expense').innerText = '-' + fmt(totalExpense);
             const balance = totalIncome - totalExpense;
