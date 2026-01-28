@@ -503,6 +503,7 @@
                     <option value="">-- Выберите категорию --</option>
                 </select>
                 <input type="text" id="tx-cat-new" placeholder="Название новой категории" class="hidden">
+                <input type="text" id="tx-desc" placeholder="Комментарий (необязательно)">
                 <button class="action-btn" onclick="submitTx()">Добавить</button>
             </div>
             <div id="form-goal" class="hidden">
@@ -793,6 +794,7 @@
             const t = document.getElementById('tx-type').value;
             const a = document.getElementById('tx-amount').value;
             let c = document.getElementById('tx-cat').value;
+            const desc = document.getElementById('tx-desc').value.trim();
 
             // Если выбрано "Создать новую", берём значение из текстового поля
             if (c === '__NEW__') {
@@ -800,7 +802,7 @@
             }
 
             if (!a || !c) return tg.showAlert("Заполните все поля");
-            send('add_tx', { t, a, c });
+            send('add_tx', { t, a, c, d: desc });
         }
 
         function submitGoal() {
