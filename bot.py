@@ -245,10 +245,10 @@ async def handle_api_action(request):
                 amount = float(data.get('a'))
                 cat = data.get('c')
                 desc = data.get('d', '')
-                date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 
-                conn.execute("INSERT INTO transactions (user_id, amount, category, type, date, description) VALUES (?, ?, ?, ?, ?, ?)",
-                             (user_id, amount, cat, t_type, date_str, desc))
+                # Используем save_transaction с защитой от дублей
+                if not save_transaction(user_id, amount, cat, t_type, desc):
+                    return web.json_response({"status": "duplicate", "message": "Дубликат транзакции"}, headers=headers)
                 
                 icon = "📉" if t_type == "expense" else "📈"
                 resp_text = f"✅ Добавлено: {amount:.0f} р. ({cat})"
@@ -1036,6 +1036,151 @@ async def get_history(message: types.Message):
         sign = "+" if r[3] == 'income' else "-"
         text += f"`{r[0][:10]}` | **{sign}{r[1]:.0f} р.** ({r[2]})\n"
     await message.answer(text, parse_mode="Markdown")
+
+
+# --- ПРОСМОТР И УДАЛЕНИЕ ТРАНЗАКЦИЙ (для пользователей) ---
+
+@dp.message(F.text == "📋 Транзакции")
+async def user_transactions_menu(message: types.Message):
+    """Показать транзакции пользователя с пагинацией и возможностью удаления"""
+    await show_user_transactions(message.from_user.id, 1, message=message)
+
+
+async def show_user_transactions(user_id: int, page: int, message: types.Message = None, callback: types.CallbackQuery = None):
+    """Универсальная функция показа транзакций"""
+    per_page = 8
+    offset = (page - 1) * per_page
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        total_tx = conn.execute("SELECT COUNT(*) FROM transactions WHERE user_id = ?", (user_id,)).fetchone()[0]
+        txs = conn.execute("""
+            SELECT id, amount, category, type, date, COALESCE(description, '')
+            FROM transactions WHERE user_id = ?
+            ORDER BY id DESC
+            LIMIT ? OFFSET ?
+        """, (user_id, per_page, offset)).fetchall()
+    
+    total_pages = max(1, (total_tx + per_page - 1) // per_page)
+    
+    if not txs and page == 1:
+        text = "📋 **Ваши транзакции**\n\nПока пусто. Добавьте первую запись!"
+        kb = None
+    else:
+        text = f"📋 **Ваши транзакции** ({total_tx})\n"
+        text += f"Страница {page}/{total_pages}\n\n"
+        
+        for tx_id, amount, cat, t_type, date, desc in txs:
+            icon = "📉" if t_type == "expense" else "📈"
+            sign = "-" if t_type == "expense" else "+"
+            date_short = date[5:10] if date else ""
+            text += f"{icon} {sign}{amount:,.0f} | {cat[:12]}"
+            if desc:
+                text += f" | {desc[:10]}"
+            text += f" | {date_short}\n"
+        
+        text += "\n_Нажмите на транзакцию для удаления:_"
+        
+        # Кнопки транзакций для удаления
+        buttons = []
+        for tx_id, amount, cat, t_type, date, desc in txs:
+            icon = "📉" if t_type == "expense" else "📈"
+            sign = "-" if t_type == "expense" else "+"
+            buttons.append([InlineKeyboardButton(
+                text=f"❌ {icon} {sign}{amount:,.0f} {cat[:10]}",
+                callback_data=f"user_del_tx_{tx_id}_{page}"
+            )])
+        
+        # Навигация
+        nav_row = []
+        if page > 1:
+            nav_row.append(InlineKeyboardButton(text="⬅️", callback_data=f"user_tx_page_{page-1}"))
+        nav_row.append(InlineKeyboardButton(text=f"📄 {page}/{total_pages}", callback_data="ignore"))
+        if page < total_pages:
+            nav_row.append(InlineKeyboardButton(text="➡️", callback_data=f"user_tx_page_{page+1}"))
+        if nav_row:
+            buttons.append(nav_row)
+        
+        kb = InlineKeyboardMarkup(inline_keyboard=buttons)
+    
+    if message:
+        await message.answer(text, reply_markup=kb, parse_mode="Markdown")
+    elif callback:
+        try:
+            await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
+        except Exception:
+            pass
+        await callback.answer()
+
+
+@dp.callback_query(F.data.startswith("user_tx_page_"))
+async def user_tx_navigate(callback: types.CallbackQuery):
+    """Пагинация транзакций"""
+    page = int(callback.data.split("_")[3])
+    await show_user_transactions(callback.from_user.id, page, callback=callback)
+
+
+@dp.callback_query(F.data.startswith("user_del_tx_"))
+async def user_delete_tx_confirm(callback: types.CallbackQuery):
+    """Подтверждение удаления транзакции"""
+    parts = callback.data.split("_")
+    tx_id = int(parts[3])
+    page = int(parts[4]) if len(parts) > 4 else 1
+    
+    # Получаем инфо о транзакции
+    with sqlite3.connect(DB_PATH) as conn:
+        tx = conn.execute("""
+            SELECT amount, category, type, date 
+            FROM transactions 
+            WHERE id = ? AND user_id = ?
+        """, (tx_id, callback.from_user.id)).fetchone()
+    
+    if not tx:
+        await callback.answer("Транзакция не найдена", show_alert=True)
+        return
+    
+    amount, cat, t_type, date = tx
+    icon = "📉" if t_type == "expense" else "📈"
+    sign = "-" if t_type == "expense" else "+"
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Да, удалить", callback_data=f"user_confirm_del_{tx_id}_{page}")],
+        [InlineKeyboardButton(text="🔙 Отмена", callback_data=f"user_tx_page_{page}")]
+    ])
+    
+    await callback.message.edit_text(
+        f"🗑 **Удалить транзакцию?**\n\n"
+        f"{icon} {sign}{amount:,.0f} р. ({cat})\n"
+        f"Дата: {date[:10] if date else 'N/A'}",
+        reply_markup=kb,
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+@dp.callback_query(F.data.startswith("user_confirm_del_"))
+async def user_delete_tx_execute(callback: types.CallbackQuery):
+    """Выполнение удаления транзакции"""
+    parts = callback.data.split("_")
+    tx_id = int(parts[3])
+    page = int(parts[4]) if len(parts) > 4 else 1
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        # Проверяем, что транзакция принадлежит пользователю
+        tx = conn.execute("SELECT id FROM transactions WHERE id = ? AND user_id = ?", 
+                         (tx_id, callback.from_user.id)).fetchone()
+        if tx:
+            conn.execute("DELETE FROM transactions WHERE id = ?", (tx_id,))
+            conn.commit()
+            await callback.answer("✅ Транзакция удалена!", show_alert=True)
+        else:
+            await callback.answer("❌ Ошибка удаления", show_alert=True)
+            return
+    
+    # Обновляем Menu Button
+    await update_user_menu_button(callback.from_user.id)
+    
+    # Возвращаемся к списку
+    await show_user_transactions(callback.from_user.id, page, callback=callback)
 
 
 # --- 4. ФУНКЦИОНАЛ ЦЕЛЕЙ ---
@@ -2012,10 +2157,12 @@ async def web_app_data_handler(message: types.Message):
                 amount = float(data.get('a'))
                 cat = data.get('c')
                 desc = data.get('d', '')
-                date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 
-                conn.execute("INSERT INTO transactions (user_id, amount, category, type, date, description) VALUES (?, ?, ?, ?, ?, ?)",
-                             (uid, amount, cat, t_type, date_str, desc))
+                # Используем save_transaction с защитой от дублей
+                if not save_transaction(uid, amount, cat, t_type, desc):
+                    logging.info(f"Duplicate transaction prevented for user {uid}")
+                    await message.answer("⚠️ Транзакция уже добавлена (защита от дубликатов)")
+                    return
                 
                 resp_text = f"✅ Добавлено: {amount} р. ({cat})"
                 if t_type == "expense":
